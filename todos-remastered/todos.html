@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="stylesheets/main.css" type="text/css" />
+    </head>
+    
+    <body>
+        <input type="checkbox" id="sidebar-toggle">
+        <section class="sidebar">
+            <section class="status_panel">
+                <table>
+                    <thead>
+                        <td><img src="assets/todos_icon.png"></img></td>
+                        <td><h2>All Todos</h2></td>
+                        <td><span>18</span></td>
+                    </thead>
+                    <tbody>
+                        <tr class="selected">
+                            <td></td>
+                            <td>02/16</td>
+                            <td><span>8</span></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>03/16</td>
+                            <td><span>2</span></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>04/16</td>
+                            <td><span>1</span></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>05/16</td>
+                            <td><span>1</span></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>06/16</td>
+                            <td><span>6</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <section class="status_panel completed">
+                <table>
+                    <thead>
+                        <td><img src="assets/completed_icon.png"></img></td>
+                        <td><h2>Completed</h2></td>
+                        <td></td>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td>02/16</td>
+                            <td></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>03/16</td>
+                            <td></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>04/16</td>
+                            <td></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>05/16</td>
+                            <td></td>
+                        </tr>
+                        <tr class="">
+                            <td></td>
+                            <td>06/14</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </section>
+        
+        <main>
+            <header>
+                <div>
+                    <label for="sidebar-toggle">
+                        <img id="hamburger" src="assets/menu_icon.png"></img>
+                    </label>
+                </div>
+                <div><h1>02/16</h1><span>8</span></div>
+            </header>
+            
+            <section class="todos">
+                <ul>
+                    <li>
+                        <label class="control">
+                          <input type="img" src="assets/plus_button.png"><span>Add new to do</span>                        
+                          <div class="control_indicator_img"><img src="assets/plus_button.png"></img></div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox modal">
+                          <input type="checkbox"/><span>Item 1</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox"/><span>Item 2</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox"/><span>Item 3</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox" checked="checked"/><span>Item 4</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox" checked="checked"/><span>Item 5</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox" checked="checked"/><span>Item 6</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox"/><span>Item 7</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox"/><span>Item 8</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <!--<span>Item 8</span>-->
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                          <input type="checkbox"/><span>Item 9</span>
+                          <div class="control_indicator"></div>
+                        </label>
+                        <img src="assets/trash_icon.png"></img>
+                    </li>
+                </ul>
+            </section>
+            
+            <!--Modal: needs class name .modal to show-->
+            <section class="">
+                <div>
+                    <ul>
+                        <li>
+                            <label><span>Title</span><input type="text" value="Item 2"/></label>
+                        </li>
+                        <li>
+                            <label class="date"><span>Due Date</span>
+                                <input type="text" value="16"/><span>/</span><input type="text" value="" placeholder="Month"/><span>/</span><input type="text" value="" placeholder="Year"/>
+                            </label>
+                        </li>
+                        <li class="textbox">
+                            <label><span>Description</span><textarea rows="4" placeholder="Description"></textarea></label>
+                        </li>
+                        <li>
+                            <input type="button" value="Save"><input type="button" value="Mark As Complete">
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>
