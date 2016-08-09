@@ -23,7 +23,7 @@ main {
   vertical-align: middle; }
 
 header h1 {
-  display: block; }
+  display: inline-block; }
 header div:last-child {
   margin-top: 8px;
   margin-bottom: 26px;
@@ -33,9 +33,7 @@ header div span {
   color: white;
   padding: 1px 6px 0 6px;
   border-radius: 100%;
-  position: absolute;
-  top: 2px;
-  left: 78px; }
+  margin-left: 10px; }
 
 .todos img {
   float: right;
