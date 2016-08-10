@@ -1,7 +1,7 @@
 ### Todos-Remastered
 Project html and css ported from 'css-projects' repository. 
 
-Functionality:
+### Functionality:
 - Add new todos
 - delete todos
 - display number of todos in summary
@@ -20,6 +20,8 @@ Functionality:
 - hover state: blue
 - modal pop up window using the hidden checkbox trick
 - Responsive hamburger pops up, click to display left column
+
+### Remaining Work
 
 # Ajax-and-handlebars
  Description coming.
