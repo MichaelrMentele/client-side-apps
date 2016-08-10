@@ -96,23 +96,23 @@
                     <td><span>{{todos_in_category}}</span></td>
                 </thead>
                 <tbody>
-                    {{#each todo_categories}}
-                    {{> side_panel_item_template}}
+                    {{#each categories}}
+                    {{> category_template}}
                     {{/each}}
                 </tbody>
             </table>
         </script>
-        <script id="side_panel_item_template" type="text/x-handlebars" data-type="partial">
+        <script id="category_template" type="text/x-handlebars" data-type="partial">
             <tr class="">
                 <td></td>
-                <td>{{date}}</td>
+                <td>{{title}}</td> <!-- Will be date string for this project -->
                 <td><span>{{todos_in_category}}</span></td>
             </tr>
         </script>
 
     </body>
      <!-- Site Code -->
-    <script src="javascripts/todoObject.js"></script>
+    <script src="javascripts/models.js"></script>
     <script src="javascripts/view.js"></script>
     <script src="javascripts/control.js"></script>
 </html>

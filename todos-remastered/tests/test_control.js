@@ -15,6 +15,8 @@ $("[data-type=partial]").each(function () {
 // TEMPLATE TESTING //
 //////////////////////
 
+// Note: Used to test templates in isolation.
+
 // PASS: Todo List Test
 var todo_list = templates.todo_list_template
 var todo = templates.todo_item_template
@@ -25,7 +27,7 @@ $("#todo_list").append(todo_list({todos: todos}));
 
 // PASS: Side Panel Test
 var side_panel = templates.side_panel_template;
-var category = templates.side_panel_item_template;
+var category = templates.category_template;
 
 var example_category = {date: "1/1" , todos_in_category: 10};
 var categories = {example_category};
