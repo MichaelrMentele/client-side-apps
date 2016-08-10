@@ -1,33 +1,23 @@
-///////////////
-// Templates //
-///////////////
-
-// Fetch and compile templates
-var templates = {};
-$("script[type='text/x-handlebars']").each(function() {
-		var $template = $(this);
-		templates[$template.attr("id")] = Handlebars.compile($template.html());
-});
-
-// Register partial templates
-$("[data-type=partial]").each(function () {
-		var $partial = $(this);
-		Handlebars.registerPartial($partial.attr("id"), $partial.html());
-});
-
 /////////////
-// HELPERS //
+// Helpers //
 /////////////
-function initializeObjects() {
+
+// Refector: push this to an init method on the renderer object
+function intializeView() {
+	var templateSelector = "script[type='text/x-handlebars']";
+	var partialSelector = "[data-type=partial]";
+
+	var viewRenderer = Object.create(Renderer);
+	viewRenderer.getTemplates(templateSelector);
+	viewRenderer.registerPartials(partialSelector);
+
+	return viewRenderer;
+}
+
+// Refactor: push this to an init method??!?
+function initializeModel() {
 	// If you want more panels, add them here. Todos and other Categories
 	// created dynamically at runtime.
-
-	// Default categories
-	var CompleteTodosDefaultCategory = Object.create(Category);
-	var AllTodosDefaultCategory = Object.create(Category);
-
-	CompleteTodosDefaultCategory.init({title: "No Due Date"});
-	AllTodosDefaultCategory.init({title: "No Due Date"});
 
 	// Default Panels
 	var AllTodos = Object.create(Panel);
@@ -35,10 +25,7 @@ function initializeObjects() {
 	var panels = [];
 
 	AllTodos.init({icon_path: "assets/todos_icon.png", title: "All Todos"});
-	AllTodos.addCategory(AllTodosDefaultCategory);
-
 	CompleteTodos.init({icon_path: "assets/completed_icon.png", title: "Completed"});
-	CompleteTodos.addCategory(CompleteTodosDefaultCategory);
 
 	panels.push(AllTodos);
 	panels.push(CompleteTodos);
@@ -54,59 +41,51 @@ function initializeObjects() {
 // APP LOGIC //
 ///////////////
 
+var pageData = initializeModel();
+var pageRenderer = intializeView();
+var templates = pageRenderer.templates;
+
+pageRenderer.sidebarPanels(pageData.panels);
 
 
-var pageData = initializeObjects();
-// !!! Need to validate categories before rendering
-// Parses data from the pageData object and passes it to the handlebars template.
-var sidebarRenderer = {
-	panels: pageData.panels,
-	render: function() {
-		this.renderPanels();
-	},
-	renderPanels: function() {
-		// Refactor: Could refactor for generic panels in the future
-		var panel_template = templates.side_panel_template;
-
-		var all_todos_container = $("#all_todos");
-		var all_todos = this.panels[0];
-
-		var completed_todos_container = $("#completed_todos");
-		var completed_todos = this.panels[1];
-
-		all_todos_container.append(panel_template(all_todos));
-		completed_todos_container.append(panel_template(completed_todos));
-	},
-}
-
-sidebarRenderer.render();
+// TESTING...
+pageData.panels[0].createCategory({title: "1/1"});
 
 
 
-//////////////////////
-// TEMPLATE TESTING //
-//////////////////////
-
-// PASS: Side Panel Test
-// var side_panel = templates.side_panel_template;
-// var category = templates.category_template;
-
-// $(".status_panel").append(side_panel(AllTodos));
-
-// // PASS: Todo List Test
-// var todo_list = templates.todo_list_template
-// var todo = templates.todo_item_template
-
-// var example_todo = {complete: true, title: "test", date: "1/1"};
-// var todos = {example_todo};
-// $("#todo_list").append(todo_list({todos: todos}));
 
 
-// // PASS: Main Page Test
-// var main_page = templates.page_info_template;
-// $("#page_info").append(main_page({title: "All Todos", todos_in_category: 10}));
+////////////
+// EVENTS //
+////////////
 
-// PASS: Modal Write-to Test
-// var modal = templates.modal_template;
-// $("#modal").append(modal({title: "Item 1", day: 10, month: 2, year: 2011, description: "BLAH"}));
-// $("#modal").addClass("modal");
+// We only want events to modify our model/objects
+// Do we want to go so far as to have a page object? It might be nice. We could have the page object have a:
+// -> main panel object (dynamic collection based on selection)
+// -> 2 side panel objects (complete list, and incomplete list)
+// -> Our view should only be able to modify data, right?
+
+// When we click on an object it should identify itself. So when I click on a category, it should say hey, I"m this category.
+// That means when we are rendering it we need to save some data, or an id about itself. That way we can click
+// know which item we have selected and thus where to get info to display to the main display. 
+// We need to know:
+// 		category ids 	-> display
+// 		todo ids  		-> display
+// This info already exists on the model in the form of an index. All we need to do is write it to html at render time. 
+// That means adding it to our templates.
+
+// PANEL
+// On click of category, set class to selected and display it on main
+// If a category is empty we shouldn't display it
+// dynamically add categories based on new todos
+// update todos counts
+
+// MAIN
+// On click of todo item, add modal class to bottom section as well as render form template
+// On click of new todo item, add modal class to bottom section and render form (will be blank)
+// click on trash can to delete object
+
+// MODAL
+// Bind events for making a todo item from a modal submission 
+// -> save: will need to parse the modal form into an object
+// -> markascomplete: same as save, also set complete to true

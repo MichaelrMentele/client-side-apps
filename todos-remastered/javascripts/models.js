@@ -11,6 +11,9 @@ var Sidebar = {
 	init: function(params) {
 		this.panels = params.panels;
 	},
+	getPanel: function(index) {
+		return this.panels[index];
+	},
 }
 
 // Note: A Panel is also a super category. 
@@ -21,7 +24,14 @@ var Panel = {
 		this.title = params.title || "No Due Date";
 		this.categories = [];
 		this.todos_in_category = this.calculateTodos();
+		this.todos = []
 		console.log("Category: " + this.title + " initialized.")
+	},
+	createCategory: function(params) {
+		var newCat = Object.create(Category);
+		newCat.init(params);
+
+		return newCat;
 	},
 	addCategory: function(category){
 		this.categories.push(category);
@@ -43,8 +53,15 @@ var Panel = {
 			this.categories.reduce(function(sum, category) {
 				return sum + category.calculateTodos();
 			}, 0);
-		}
-		
+		}		
+	},
+	loadTodos: function() {
+		var todos = [];
+		this.categories.forEach( function(category) {
+			todos.push(category.todos);
+		});
+
+		return $.map(todos, function(ele) {return ele}); // flatten array
 	},
 }
 
@@ -116,12 +133,4 @@ var Todo = {
 	},
 }
 
-// DESC: The Display should be used as a singleton container to temporarily hold 
-// the current or default view data.
-// INPUT: Consumes a Category object to extract data.
-// OUTPUT: Outputs current Category properties to the window
-var Display = {
-	init: function(category) {
 
-	},
-}
