@@ -66,34 +66,13 @@
         <script id="page_info_template" type="text/x-handlebars">
             <h1>{{title}}</h1><span>{{todos_in_category}}</span>
         </script>
-        <script id="todo_list_template" type="text/x-handlebars">
-            <ul>
-                <li>
-                    <label class="control">
-                      <input type="img" src="assets/plus_button.png"><span>Add new todo</span>               
-                      <div class="control_indicator_img"><img src="assets/plus_button.png"></img></div>
-                    </label>
-                </li>
-                {{#each todos}}
-                {{> todo_item_template}}
-                {{/each}}
-            </ul>
-        </script>
-        <script id="todo_item_template" type="text/x-handlebars" data-type="partial">
-            <li data-id="{{@index}}">
-                <label class="control control-checkbox">
-                  <input type="checkbox" {{#if complete}}checked{{/if}}><span>{{title}} &mdash; {{date}}</span>
-                  <div class="control_indicator"></div>
-                </label>
-                <img src="assets/trash_icon.png"></img>
-            </li>
-        </script>
         <script id="side_panel_template" type="text/x-handlebars">
             <table>
                 <thead>
-                    <td><img src="{{icon_path}}"></img></td>
-                    <td><h2>{{title}}</h2></td>
-                    <td><span>{{todos_in_category}}</span></td>
+                    
+                        <td><img src="{{icon_path}}"></img></td>
+                        <td><a href="#selectable"><h2>{{title}}</a></h2></td>
+                        <td><span>{{todos_in_category}}</span></td>
                 </thead>
                 <tbody>
                     {{#each categories}}
@@ -103,13 +82,37 @@
             </table>
         </script>
         <script id="category_template" type="text/x-handlebars" data-type="partial">
-            <tr class="">
-                <td></td>
-                <td>{{title}}</td> <!-- Will be a date string for this project -->
-                <td><span>{{todos_in_category}}</span></td>
-            </tr>
+            <a href="#">
+                <tr class="">
+                    <td></td>
+                    <td><a href="#selectable">{{title}}</a></td> <!-- Will be a date string for this project -->
+                    <td><span>{{todos_in_category}}</span></td>
+                </tr>
+            </a>
         </script>
+        <script id="todo_list_template" type="text/x-handlebars">
+            <ul>
+                <li>
+                    <label id="new_todo" class="control">
+                      <input type="img" src="assets/plus_button.png"><span>Add new todo</span>               
+                      <div class="control_indicator_img"><img src="assets/plus_button.png"></img></div>
+                    </label>
+                </li>
+                {{#each todos}}
 
+                {{> todo_item_template}}
+                {{/each}}
+            </ul>
+        </script>
+        <script id="todo_item_template" type="text/x-handlebars" data-type="partial">
+            <li data-id="{{@index}}">
+                <label class="control control-checkbox">
+                  <input type="checkbox" {{#if complete}}checked{{/if}}><span><a href="#editable">{{title}} &mdash; {{dueDate}}</a></span>
+                  <div class="control_indicator"></div>
+                </label>
+                <a href="#deletable"><img src="assets/trash_icon.png"></img></a>
+            </li>
+        </script>
     </body>
      <!-- Site Code -->
     <script src="javascripts/models.js"></script>

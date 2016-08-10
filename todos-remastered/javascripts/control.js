@@ -4,6 +4,7 @@
 
 // Refector: push this to an init method on the renderer object
 function intializeView() {
+	console.log("Initializing rendering object...")
 	var templateSelector = "script[type='text/x-handlebars']";
 	var partialSelector = "[data-type=partial]";
 
@@ -16,6 +17,7 @@ function intializeView() {
 
 // Refactor: push this to an init method??!?
 function initializeModel() {
+	console.log("Initializing data object...")
 	// If you want more panels, add them here. Todos and other Categories
 	// created dynamically at runtime.
 
@@ -37,6 +39,12 @@ function initializeModel() {
 	return PageSidebar;
 }
 
+function createTodo(params){
+	var todo = Object.create(Todo);
+	todo.init(params);
+
+	return todo;
+}
 ///////////////
 // APP LOGIC //
 ///////////////
@@ -49,15 +57,79 @@ pageRenderer.sidebarPanels(pageData.panels);
 
 
 // TESTING...
-pageData.panels[0].createCategory({title: "1/1"});
+var todo = createTodo({title: "Shopping"});
+var todo2 = createTodo({title: "Stuff", dueDate: "1/1"});
+
+var panel1 = pageData.panels[0];
+panel1.createCategory({title: "1/1"});
+
+var testcat = panel1.categories[0];
+testcat.addTodo(todo);
+testcat.addTodo(todo2);
+
+pageRenderer.sidebarPanels(pageData.panels);
+pageRenderer.todoDisplay(testcat);
 
 
+//////////////////////
+// TEMPLATE TESTING //
+//////////////////////
 
+// PASS: Side Panel Test
+// var side_panel = templates.side_panel_template;
+// var category = templates.category_template;
+
+// $(".status_panel").append(side_panel(AllTodos));
+
+// PASS: Todo List Test
+// var todo_list = templates.todo_list_template
+// var todo = templates.todo_item_template
+
+// var example_todo = {complete: true, title: "test", date: "1/1"};
+// var todos = {example_todo};
+// $("#todo_list").append(todo_list({todos: todos}));
+
+
+// // PASS: Main Page Test
+// var main_page = templates.page_info_template;
+// $("#page_info").append(main_page({title: "All Todos", todos_in_category: 10}));
+
+// PASS: Modal Write-to Test
+// var modal = templates.modal_template;
+// $("#modal").append(modal({title: "Item 1", day: 10, month: 2, year: 2011, description: "BLAH"}));
+// $("#modal").addClass("modal");
 
 
 ////////////
 // EVENTS //
 ////////////
+
+// Handle Selection of Category
+$("a[href='#selectable']").on("click", function(event){
+	event.preventDefault();
+	console.log("selectiong");
+	// identify selected category (should have index when added)
+	// render selected category todo list to display
+	// add class to selected category of "selected"
+});
+
+// Handle Deletion
+$("a[href='#deletable']").on("click", function(event){
+	event.preventDefault();
+	console.log("deleting");
+});
+
+// Handle Create New Todo
+$("#new_todo").on("click", function(event){
+	event.preventDefault();
+	console.log("adding new todo");
+});
+
+// Handle Edit of Todo
+$("a[href='#editable']").on("click", function(event){
+	event.preventDefault();
+	console.log("editing");
+});
 
 // We only want events to modify our model/objects
 // Do we want to go so far as to have a page object? It might be nice. We could have the page object have a:
@@ -73,6 +145,7 @@ pageData.panels[0].createCategory({title: "1/1"});
 // 		todo ids  		-> display
 // This info already exists on the model in the form of an index. All we need to do is write it to html at render time. 
 // That means adding it to our templates.
+// Categorys and todos are selectable.
 
 // PANEL
 // On click of category, set class to selected and display it on main

@@ -21,7 +21,7 @@ var Sidebar = {
 var Panel = {
 	init: function(params) {
 		this.icon_path = params.icon_path || undefined;
-		this.title = params.title || "No Due Date";
+		this.title = params.title || "Todos";
 		this.categories = [];
 		this.todos_in_category = this.calculateTodos();
 		this.todos = []
@@ -31,7 +31,7 @@ var Panel = {
 		var newCat = Object.create(Category);
 		newCat.init(params);
 
-		return newCat;
+		this.addCategory(newCat);
 	},
 	addCategory: function(category){
 		this.categories.push(category);
@@ -56,6 +56,7 @@ var Panel = {
 		}		
 	},
 	loadTodos: function() {
+		console.log("Panel: Loading todos from children categories");
 		var todos = [];
 		this.categories.forEach( function(category) {
 			todos.push(category.todos);
@@ -71,7 +72,8 @@ var Category = {
 		this.title = params.title; // Refactor: title is poor name choice
 		this.todos = [];
 		this.todos_in_category = this.calculateTodos();
-		this.completeTodos = [];
+		this.completeTodos = []; // !!! Should we have this? I don't think so. It exists on one type of panel that is
+														 // populated by checking the todoes on the first panel.
 	},
 	calculateTodos: function() {
 		return this.todos.length
@@ -85,6 +87,7 @@ var Category = {
 	},
 	addTodo: function(todo) {
 		this.todos.push(todo);
+		this.todos_in_category = this.calculateTodos();
 	},
 	getSortValue: function() {
 		var monthyear = this.title.split("/");
