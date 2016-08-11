@@ -6,107 +6,14 @@
 // Objects //
 /////////////
 
-// Sidebar should be used as a singleton that contains all other persistent data objects.
-var Sidebar = {
-	init: function(params) {
-		this.panels = params.panels;
-	},
-	getPanel: function(index) {
-		return this.panels[index];
-	},
-}
-
-// Note: A Panel is also a super category. 
-// To Refactor: There is common behavior among objects.
-var Panel = {
-	init: function(params) {
-		this.icon_path = params.icon_path || undefined;
-		this.title = params.title || "Todos";
-		this.categories = [];
-		this.todos_in_category = this.calculateTodos();
-		this.todos = []
-		console.log("Category: " + this.title + " initialized.")
-	},
-	createCategory: function(params) {
-		var newCat = Object.create(Category);
-		newCat.init(params);
-
-		this.addCategory(newCat);
-	},
-	addCategory: function(category){
-		this.categories.push(category);
-	},	
-	hasNoSubCategories: function() {
-		return this.categories.length === 0;
-	},
-	sortCategories: function() {
-		var sortedCategories = this.categories.sort(function(curCat, nextCat) {
-			return curCat.getSortValue() - nextCat.getSortValue(); // Refactor: same sort function for this and todos
-		});
-
-		return sortedCategories;
-	},
-	calculateTodos: function() {
-		if (this.hasNoSubCategories) {
-			return 0;
-		} else {
-			this.categories.reduce(function(sum, category) {
-				return sum + category.calculateTodos();
-			}, 0);
-		}		
-	},
-	loadTodos: function() {
-		console.log("Panel: Loading todos from children categories");
-		var todos = [];
-		this.categories.forEach( function(category) {
-			todos.push(category.todos);
-		});
-
-		return $.map(todos, function(ele) {return ele}); // flatten array
-	},
-}
-
-// Template for dynamically generated object based on user created todos.
-var Category = {
-	init: function(params) {
-		this.title = params.title; // Refactor: title is poor name choice
-		this.todos = [];
-		this.todos_in_category = this.calculateTodos();
-		this.completeTodos = []; // !!! Should we have this? I don't think so. It exists on one type of panel that is
-														 // populated by checking the todoes on the first panel.
-	},
-	calculateTodos: function() {
-		return this.todos.length
-	},
-	sortTodos: function() {
-		var sortedTodos = this.todos.sort(function(curTodo, nextTodo) {
-			return curTodo.sortValue - nextTodo.sortValue;
-		});
-
-		return sortedTodos;
-	},
-	addTodo: function(todo) {
-		this.todos.push(todo);
-		this.todos_in_category = this.calculateTodos();
-	},
-	getSortValue: function() {
-		var monthyear = this.title.split("/");
-		var yearmonth = [];
-
-		yearmonth.push(monthyear[1]);
-		yearmonth.push(monthyear[0]);
-		return Number(yearmonth.join(""));
-	},
-}
-
 // Template for dynamic user created object with form submission.
 var Todo = {
 	init: function(params){
 		this.title = params.title || "Task";
 		this.dueDate = params.dueDate || "No Due Date"; //form of "001122"
-		this.sortValue = this.getSortValue();
 		this.description = params.description || "";
 		this.complete = params.complete || false;
+		this.sortValue = this.getSortValue();
 	},
 	isComplete: function() {
 		return this.complete;
@@ -136,4 +43,35 @@ var Todo = {
 	},
 }
 
+var TodoList = {
+	init: function() {
+		this.todos = []
+	},
+	add: function(todo) {
+		this.todos.push(todo);
+	},
+	delete: function(index) {
+		this.todos.splice(index, 1);
+	},
+	// !!! INCOMPLETE
+	select: function(tag, complete) {
+		var complete = complete || false;
+		var tag = tag;
+
+		// use complete and tag to filter todos
+		// returns filtered list for consumption
+	},
+	generateCategories: function() {
+		// creates month categories based on 
+	},
+}
+
+var Panel = {
+	init: function(params) {
+		this.icon_path = params.icon_path;
+		this.title = params.title;
+		this.todo_count = params.todo_count || 0;
+		this.selected = false;
+	}
+}
 

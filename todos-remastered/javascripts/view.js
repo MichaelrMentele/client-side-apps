@@ -16,6 +16,7 @@ var Renderer = {
 		});
 	},
 	sidebarPanels: function(panels) {
+		console.log("Rendering Panels...")
 		// Refactor: Could refactor for generic panels in the future
 		var panel_template = this.templates.side_panel_template;
 
@@ -28,20 +29,25 @@ var Renderer = {
 		this.render(all_todos_container, panel_template, all_todos);
 		this.render(completed_todos_container, panel_template, completed_todos);
 	},
-	todoDisplay: function(category) {
+	display: function(list, category) {
+		var categoryInfo = category || {title: "All Todos", todo_count: "?"};
+
 		console.log("Rendering display...");
+
 		var header_tmp = this.templates.page_info_template;
 		var list_tmp = this.templates.todo_list_template;
 
 		var page_info_container = $("#page_info");
 		var todo_list_container = $("#todo_list");
 
-
-		this.render(page_info_container, header_tmp, category);
-		this.render(todo_list_container, list_tmp, {todos: category.todos});
+		this.render(page_info_container, header_tmp, categoryInfo);
+		this.render(todo_list_container, list_tmp, {todos: list.todos});
 	},
-	categorySelection: function() {
-
+	modal: function(todo) {
+		var todo = todo || {};
+		var modal_tmp = this.templates.modal_template;
+		var modal_container = $("#modal");
+		this.render(modal_container, modal_tmp, todo);
 	},
 	render: function(container, template, object) {
 		// Refactor: Will need to clear out current object won't we?

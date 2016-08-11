@@ -1,3 +1,23 @@
+///////////////
+// APP LOGIC //
+///////////////
+
+// INIT
+var todoList = initializeModel();
+var pageRenderer = intializeView();
+
+var allTodosPanel = Object.create(Panel);
+allTodosPanel.init({icon_path: "assets/todos_icon.png", title: "All Todos"});
+var completedTodosPanel = Object.create(Panel);
+completedTodosPanel.init({icon_path: "assets/completed_icon.png", title: "Completed Todos"});
+
+var pageIndex = [allTodosPanel, completedTodosPanel]
+
+pageRenderer.sidebarPanels(pageIndex);
+$("#all_todos a[href='#selectable']").closest("tr").addClass("selected");
+updateDisplay();
+rebind();
+
 /////////////
 // Helpers //
 /////////////
@@ -15,28 +35,15 @@ function intializeView() {
 	return viewRenderer;
 }
 
-// Refactor: push this to an init method??!?
 function initializeModel() {
-	console.log("Initializing data object...")
-	// If you want more panels, add them here. Todos and other Categories
-	// created dynamically at runtime.
-
-	// Default Panels
-	var AllTodos = Object.create(Panel);
-	var CompleteTodos = Object.create(Panel);
-	var panels = [];
-
-	AllTodos.init({icon_path: "assets/todos_icon.png", title: "All Todos"});
-	CompleteTodos.init({icon_path: "assets/completed_icon.png", title: "Completed"});
-
-	panels.push(AllTodos);
-	panels.push(CompleteTodos);
-
-	// Sidebar Object
-	var PageSidebar = Object.create(Sidebar);
-	PageSidebar.init({panels});
-
-	return PageSidebar;
+	console.log("Initializing todo list...")
+	
+	var list = Object.create(TodoList);
+	list.init();
+	
+	list.superCategories = [{icon_path: "assets/todos_icon.png", title: "All Todos", tag: /.*/},
+													{icon_path: "assets/completed_icon.png", title: "Completed", tag: /.*/}];
+	return list;
 }
 
 function createTodo(params){
@@ -45,107 +52,156 @@ function createTodo(params){
 
 	return todo;
 }
-///////////////
-// APP LOGIC //
-///////////////
 
-var pageData = initializeModel();
-var pageRenderer = intializeView();
-var templates = pageRenderer.templates;
+function getModalInput() {
+	var title = $("#title_input").val();
+	var dueDate = $("#date_inputs > input").val() + $("#date_inputs > input").next().next().val() + $("#date_inputs input:last-child").val();
+	var description = $("textarea").val();
 
-pageRenderer.sidebarPanels(pageData.panels);
+	return {title: title, dueDate: dueDate, description: description};
+}
 
+function cleanUpModal() {
+	$("#modal").removeClass("modal");
+	$("#modal").empty();
+}
 
-// TESTING...
-var todo = createTodo({title: "Shopping"});
-var todo2 = createTodo({title: "Stuff", dueDate: "1/1"});
+function updateDisplay() {
+	var title = $(".selected a").text();
+	var todo_count = $(".selected span").text();
+	var category = {title: title, todo_count: todo_count};
 
-var panel1 = pageData.panels[0];
-panel1.createCategory({title: "1/1"});
+	pageRenderer.display(todoList, category);
+}
 
-var testcat = panel1.categories[0];
-testcat.addTodo(todo);
-testcat.addTodo(todo2);
+// set selected status on model
 
-pageRenderer.sidebarPanels(pageData.panels);
-pageRenderer.todoDisplay(testcat);
+function updatePage() {
+	var selected = $(".selected a").text(); // get title, use title to get handle on object
+	pageIndex.forEach( function(category) {
+		category.selected = false;
 
+		if (category.title === selected) {
+			category.selected = true;
+		}
+	});
 
-//////////////////////
-// TEMPLATE TESTING //
-//////////////////////
+	pageRenderer.sidebarPanels([allTodosPanel, completedTodosPanel]);
+	updateDisplay();
+	
+	// rebuild categorie
+	rebind();
+}
 
-// PASS: Side Panel Test
-// var side_panel = templates.side_panel_template;
-// var category = templates.category_template;
+function saveTodo(complete) {
+	console.log("Saving todo...");
 
-// $(".status_panel").append(side_panel(AllTodos));
+	var complete = complete || false;
+	var params = getModalInput();
+	params.complete = complete;
+	
+	todo = createTodo(params);
+	todoList.add(todo);
+}
 
-// PASS: Todo List Test
-// var todo_list = templates.todo_list_template
-// var todo = templates.todo_item_template
+function findTodoIndex(todo) {
+	return Number($(todo).closest("li").data('id'));
+}
 
-// var example_todo = {complete: true, title: "test", date: "1/1"};
-// var todos = {example_todo};
-// $("#todo_list").append(todo_list({todos: todos}));
+function deleteTodo(todo) {
+	index = findTodoIndex(todo);
+	console.log("Deleting Todo " + index);
+	
+	todoList.delete(index);
+}
 
+function openTodoEdit(todo) {
+	console.log("Enter todo details...");
 
-// // PASS: Main Page Test
-// var main_page = templates.page_info_template;
-// $("#page_info").append(main_page({title: "All Todos", todos_in_category: 10}));
+	$("#modal").addClass("modal");
+	pageRenderer.modal();
 
-// PASS: Modal Write-to Test
-// var modal = templates.modal_template;
-// $("#modal").append(modal({title: "Item 1", day: 10, month: 2, year: 2011, description: "BLAH"}));
-// $("#modal").addClass("modal");
+	if (todo) {
+		var title = todo.title;
+		var description = todo.description;
 
+		$("#title_input").val(title);
+		$("textarea").val(description);
+
+		if (Number(todo.dueDate)) {
+			var day = todo.getDay();
+			var month = todo.getMonth();
+			var year = todo.getYear();
+
+			$("#date_inputs > input").val(day);
+			$("#date_inputs > input").next().next().val(month);
+			$("#date_inputs input:last-child").val(year);
+		}
+	}
+
+	// Handle Save
+	$("#save_todo").on("click", function(event){
+		event.preventDefault();
+		
+		saveTodo();
+		updatePage();
+		cleanUpModal();
+	});
+
+	// Handle Save
+	$("#save_and_complete_todo").on("click", function(event){
+		event.preventDefault();
+		
+		saveTodo(true);
+		updatePage();
+		cleanUpModal();
+	});
+}
+
+function rebind() {
+	// Handle Deletion
+	$("a[href='#deletable']").on("click", function(event){
+		event.preventDefault();
+		deleteTodo(event.target);
+		updatePage();
+	});
+
+	// Handle Edit of Todo
+	$("a[href='#editable']").on("click", function(event){
+		event.preventDefault();
+		console.log("Editing...");
+		var index = findTodoIndex(event.target);
+		var todo = todoList.todos[index];
+
+		openTodoEdit(todo);
+		deleteTodo(event.target);
+		updatePage();
+	});
+
+	// Handle Selection of Category
+	$("a[href='#selectable']").on("click", function(event){
+		event.preventDefault();
+		console.log("selecting");
+
+		$(".selected").removeClass("selected");
+		$(event.target.closest("tr")).addClass("selected");
+
+		updateDisplay();
+		// identify selected category (should have index when added)
+		// render selected category todo list to display
+		// add class to selected category of "selected"
+	});
+}
 
 ////////////
 // EVENTS //
 ////////////
 
-// Handle Selection of Category
-$("a[href='#selectable']").on("click", function(event){
-	event.preventDefault();
-	console.log("selectiong");
-	// identify selected category (should have index when added)
-	// render selected category todo list to display
-	// add class to selected category of "selected"
-});
-
-// Handle Deletion
-$("a[href='#deletable']").on("click", function(event){
-	event.preventDefault();
-	console.log("deleting");
-});
-
 // Handle Create New Todo
 $("#new_todo").on("click", function(event){
 	event.preventDefault();
-	console.log("adding new todo");
+	openTodoEdit();
 });
-
-// Handle Edit of Todo
-$("a[href='#editable']").on("click", function(event){
-	event.preventDefault();
-	console.log("editing");
-});
-
-// We only want events to modify our model/objects
-// Do we want to go so far as to have a page object? It might be nice. We could have the page object have a:
-// -> main panel object (dynamic collection based on selection)
-// -> 2 side panel objects (complete list, and incomplete list)
-// -> Our view should only be able to modify data, right?
-
-// When we click on an object it should identify itself. So when I click on a category, it should say hey, I"m this category.
-// That means when we are rendering it we need to save some data, or an id about itself. That way we can click
-// know which item we have selected and thus where to get info to display to the main display. 
-// We need to know:
-// 		category ids 	-> display
-// 		todo ids  		-> display
-// This info already exists on the model in the form of an index. All we need to do is write it to html at render time. 
-// That means adding it to our templates.
-// Categorys and todos are selectable.
 
 // PANEL
 // On click of category, set class to selected and display it on main
