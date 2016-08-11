@@ -1,10 +1,9 @@
 // SUMMARY
-// The Sidebar has Panels, which have Categories, which have todos. 
-// Categories (and their todos) are displayed to the Display when selected.
+// A TodoList has todos. 
 
-/////////////
-// Objects //
-/////////////
+//////////////////
+// Data Objects //
+//////////////////
 
 // Template for dynamic user created object with form submission.
 var Todo = {
@@ -14,6 +13,9 @@ var Todo = {
 		this.description = params.description || "";
 		this.complete = params.complete || false;
 		this.sortValue = this.getSortValue();
+	},
+	toggle: function() {
+		this.complete = !this.complete;
 	},
 	isComplete: function() {
 		return this.complete;
@@ -41,6 +43,13 @@ var Todo = {
 
 		return yearValue + monthValue + dayValue;
 	},
+	matchDueDate: function(regx) {
+		return !!this.dueDate.match(regx);
+	},
+	matchFormattedDueDate: function(regx) {
+		var formattedDate = this.formattedDate();
+		return !!formattedDate.match(regx);
+	},
 	formattedDate: function() {
 		return this.getMonth() + "/" + this.getYear();
 	},
@@ -56,13 +65,29 @@ var TodoList = {
 	delete: function(index) {
 		this.todos.splice(index, 1);
 	},
-	// !!! INCOMPLETE
-	select: function(tag, complete) {
-		var complete = complete || false;
-		var tag = tag;
-
-		// use complete and tag to filter todos
-		// returns filtered list for consumption
+	select: function(tag) {
+		// REFACTOR: Duplication...
+		if (tag === "All Todos") {
+			tag = /.*/;
+			return this.todos.filter( function(todo) {
+				return todo.matchDueDate(tag)
+			});
+		} else if (tag === "Completed Todos") {
+			tag = /.*/;
+			return this.todos.filter( function(todo) {
+				return todo.matchDueDate(tag) && todo.complete;
+			});
+		} else if (tag === "No Due Date") {
+			return this.todos.filter( function(todo) {
+				return todo.noDueDate();
+			});
+		} else if (tag.match(/..\/../)) {
+			return this.todos.filter( function(todo) {
+				return todo.matchFormattedDueDate(tag)
+			});
+		} else {
+			console.log("Invalid Tag");
+		}
 	},
 	generateBasicCategories: function() {
 		var completed = this.todos.filter( function(todo) {
@@ -113,13 +138,3 @@ var TodoList = {
 		return this.incomplete.length;
 	},
 }
-
-var Panel = {
-	init: function(params) {
-		this.icon_path = params.icon_path;
-		this.title = params.title;
-		this.todo_count = params.todo_count || 0;
-		this.selected = false;
-	}
-}
-

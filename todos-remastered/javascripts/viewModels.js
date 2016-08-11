@@ -1,6 +1,4 @@
 var Renderer = {
-	// have all the templates
-	// you pass it the object and it spits it out to the template
 	getTemplates: function(selector) {
 		this.templates = {};
 		var self = this;
@@ -30,9 +28,7 @@ var Renderer = {
 		this.clearAndRender(completed_todos_container, panel_template, completed_todos);
 	},
 	display: function(list, category) {
-		var categoryInfo = category || {title: "All Todos", todo_count: "?"};
-
-		console.log("clearAndRendering display...");
+		console.log("Clearing and rendering display...");
 
 		var header_tmp = this.templates.page_info_template;
 		var list_tmp = this.templates.todo_list_template;
@@ -40,17 +36,16 @@ var Renderer = {
 		var page_info_container = $("#page_info");
 		var todo_list_container = $("#todo_list");
 
-		this.clearAndRender(page_info_container, header_tmp, categoryInfo);
-		this.clearAndRender(todo_list_container, list_tmp, {todos: list.todos});
+		var sublist = list.select(category.title);
+
+		this.clearAndRender(page_info_container, header_tmp, category);
+		this.clearAndRender(todo_list_container, list_tmp, {todos: sublist});
 	},
 	modal: function(todo) {
 		var todo = todo || {};
 		var modal_tmp = this.templates.modal_template;
 		var modal_container = $("#modal");
 		this.clearAndRender(modal_container, modal_tmp, todo);
-	},
-	categories: function(categories) {
-		// get categories template
 	},
 	clearAndRender: function(container, template, object) {
 		// Refactor: Will need to clear out current object won't we?

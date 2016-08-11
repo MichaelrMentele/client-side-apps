@@ -9,10 +9,15 @@ body {
   height: 818px; }
 
 h1 {
-  font-size: 21px; }
+  font-size: 21px;
+  padding-left: 10px; }
 
 h2 {
   font-size: 18px; }
+
+a {
+  text-decoration: none;
+  color: inherit; }
 
 main {
   overflow: hidden;

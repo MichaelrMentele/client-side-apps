@@ -79,7 +79,7 @@
         <script id="side_panel_template" type="text/x-handlebars">
             <tr class="{{#if selected}}selected{{/if}}">
                 <td><img src="{{icon_path}}"></img></td>
-                <td><a href="#selectable">{{title}}</a></td> <!-- Will be a date string for this project -->
+                <td><a href="#selectable"><h2>{{title}}</h2></a></td> <!-- Will be a date string for this project -->
                 <td><span id="panel_count">{{todo_count}}</span></td>
             </tr>
         </script>
@@ -105,7 +105,7 @@
         <script id="todo_item_template" type="text/x-handlebars" data-type="partial">
             <li data-id="{{@index}}">
                 <label class="control control-checkbox">
-                  <input type="checkbox" {{#if complete}}checked{{/if}}><span><a href="#editable">{{title}} &mdash; {{dueDate}}</a></span>
+                  <input class="todo_toggle" type="checkbox" {{#if complete}}checked{{/if}}><span><a href="#editable">{{title}} &mdash; {{dueDate}}</a></span>
                   <div class="control_indicator"></div>
                 </label>
                 <a href="#deletable"><img src="assets/trash_icon.png"></img></a>
@@ -113,7 +113,8 @@
         </script>
     </body>
      <!-- Site Code -->
-    <script src="javascripts/models.js"></script>
-    <script src="javascripts/view.js"></script>
+    <script src="javascripts/dataModels.js"></script>
+    <script src="javascripts/viewModels.js"></script>
+    <script src="javascripts/helpers.js"></script>
     <script src="javascripts/control.js"></script>
 </html>
