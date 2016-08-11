@@ -41,6 +41,9 @@ var Todo = {
 
 		return yearValue + monthValue + dayValue;
 	},
+	formattedDate: function() {
+		return this.getMonth() + "/" + this.getYear();
+	},
 }
 
 var TodoList = {
@@ -61,8 +64,53 @@ var TodoList = {
 		// use complete and tag to filter todos
 		// returns filtered list for consumption
 	},
-	generateCategories: function() {
-		// creates month categories based on 
+	generateBasicCategories: function() {
+		var completed = this.todos.filter( function(todo) {
+			return todo.complete;
+		});
+
+		var incomplete = this.todos.filter(function(todo) {
+			return !todo.complete;
+		});
+
+		this.completed = completed;
+		this.incomplete = incomplete;
+	},
+	countCategories: function(todos) {
+		var categories = this.getCategories(todos);
+		var uniques = this.collectUniqueCategories(categories);
+
+		var catCounts = [];
+		uniques.forEach(function(cat){
+			var array = categories.filter(function(ele){
+				return ele === cat;
+			});
+
+			var catCount = {title: cat, todo_count: array.length}
+			catCounts.push(catCount);
+		});
+
+		return catCounts;
+	},
+	getCategories: function(todos) {
+		var categories = [];
+		todos.forEach(function(todo){
+			if (todo.noDueDate()) {
+				categories.push(todo.dueDate);
+			} else {
+				categories.push(todo.formattedDate())
+			}
+		});
+		return categories;
+	},
+	collectUniqueCategories: function(categories) {
+		return new Set(categories);
+	},
+	countComplete: function() {
+		return this.completed.length;
+	},
+	countIncomplete: function() {
+		return this.incomplete.length;
 	},
 }
 

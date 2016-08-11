@@ -82,20 +82,18 @@
                 <td><a href="#selectable">{{title}}</a></td> <!-- Will be a date string for this project -->
                 <td><span id="panel_count">{{todo_count}}</span></td>
             </tr>
-            <!-- <tbody>
-                {{#each categories}}
-                {{> category_template}}
-                {{/each}}
-            </tbody> -->
+        </script>
+        <script id="categories_template" type="text/x-handlebars">
+            {{#each categories}}
+            {{> category_template}}
+            {{/each}}
         </script>
         <script id="category_template" type="text/x-handlebars" data-type="partial">
-            <a href="#">
-                <tr class="">
-                    <td><img src="{{icon_path}}"></img></td>
-                    <td><a href="#selectable">{{title}}</a></td> <!-- Will be a date string for this project -->
-                    <td><span>{{todo_count}}</span></td>
-                </tr>
-            </a>
+            <tr class="">
+                <td><img src="{{icon_path}}"></img></td>
+                <td><a href="#selectable">{{title}}</a></td> <!-- Will be a date string for this project -->
+                <td><span>{{todo_count}}</span></td>
+            </tr>
         </script>
         <script id="todo_list_template" type="text/x-handlebars">
             <ul>

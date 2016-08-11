@@ -3,11 +3,17 @@
 ///////////////
 
 // INIT
-var todoList = initializeModel();
+var storedList = localStorage.getItem("list");
+storedList = JSON.parse(storedList);
+
+var todoList = initializeModel(storedList);
+
 var pageRenderer = intializeView();
 
+// Create and Render Sidebar
 var allTodosPanel = Object.create(Panel);
 allTodosPanel.init({icon_path: "assets/todos_icon.png", title: "All Todos"});
+
 var completedTodosPanel = Object.create(Panel);
 completedTodosPanel.init({icon_path: "assets/completed_icon.png", title: "Completed Todos"});
 
@@ -15,8 +21,13 @@ var pageIndex = [allTodosPanel, completedTodosPanel]
 
 pageRenderer.sidebarPanels(pageIndex);
 $("#all_todos a[href='#selectable']").closest("tr").addClass("selected");
+updatePage();
 updateDisplay();
 rebind();
+
+$(window).on("unload", function(event){
+	localStorage.setItem("list", JSON.stringify(todoList.todos));
+});
 
 /////////////
 // Helpers //
@@ -35,7 +46,7 @@ function intializeView() {
 	return viewRenderer;
 }
 
-function initializeModel() {
+function initializeModel(savedParams) {
 	console.log("Initializing todo list...")
 	
 	var list = Object.create(TodoList);
@@ -43,6 +54,13 @@ function initializeModel() {
 	
 	list.superCategories = [{icon_path: "assets/todos_icon.png", title: "All Todos", tag: /.*/},
 													{icon_path: "assets/completed_icon.png", title: "Completed", tag: /.*/}];
+
+	// Refactor: move this as option to init
+	// Write saved todos
+	savedParams.forEach(function(param) {
+		list.add(createTodo(param));
+	});
+
 	return list;
 }
 
@@ -86,10 +104,9 @@ function updatePage() {
 		}
 	});
 
-	pageRenderer.sidebarPanels([allTodosPanel, completedTodosPanel]);
+	updateCategories();
 	updateDisplay();
 	
-	// rebuild categorie
 	rebind();
 }
 
@@ -187,34 +204,33 @@ function rebind() {
 		$(event.target.closest("tr")).addClass("selected");
 
 		updateDisplay();
+		rebind();
 		// identify selected category (should have index when added)
 		// render selected category todo list to display
 		// add class to selected category of "selected"
 	});
+
+	// Handle Create New Todo
+	// Note: This event doesn't need to be rebound--it's here for grouping of code
+	$("#new_todo").on("click", function(event){
+		event.preventDefault();
+		openTodoEdit();
+	});
+
 }
 
-////////////
-// EVENTS //
-////////////
+function updateCategories() {
+	// Update panel counts
+	todoList.generateBasicCategories();
+	var allCatCounts = todoList.countCategories(todoList.todos);
+	var completedCatCounts = todoList.countCategories(todoList.completed);
+	var catCounts = {all: allCatCounts, completed: completedCatCounts};
+	pageRenderer.counts(todoList, pageIndex, catCounts);
+}
 
-// Handle Create New Todo
-$("#new_todo").on("click", function(event){
-	event.preventDefault();
-	openTodoEdit();
-});
 
 // PANEL
-// On click of category, set class to selected and display it on main
-// If a category is empty we shouldn't display it
-// dynamically add categories based on new todos
-// update todos counts
-
-// MAIN
-// On click of todo item, add modal class to bottom section as well as render form template
-// On click of new todo item, add modal class to bottom section and render form (will be blank)
-// click on trash can to delete object
-
-// MODAL
-// Bind events for making a todo item from a modal submission 
-// -> save: will need to parse the modal form into an object
-// -> markascomplete: same as save, also set complete to true
+// save todos to local storage
+// review requirements from launchschool
+// re-compile scss
+// fix date by prepending or adding zeros or converting to date object...
