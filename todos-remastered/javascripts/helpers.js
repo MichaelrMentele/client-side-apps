@@ -47,16 +47,18 @@ var Initializer = {
 
 		// Refactor: move this as option to init
 		// Write saved todos
-		savedParams.forEach(function(param) {
-			list.add(createTodo(param));
-		});
+		if (savedParams) {
+			savedParams.forEach(function(param) {
+				list.add(createTodo(param));
+			});
+		}
 
 		return list;
 	},
 }
 
 var EventBinder = {
-	// Dependent on global helpers
+	// Reminder: Dependent on global helpers
 	modal: function() {
 
 	},
