@@ -1,6 +1,10 @@
 var Renderer = {
-	getTemplates: function(selector) {
+	init: function(templateSelector, partialSelector) {
 		this.templates = {};
+		this.getTemplates(templateSelector);
+		this.registerPartials(partialSelector);
+	},
+	getTemplates: function(selector) {
 		var self = this;
 		$(selector).each(function() {
 			var $template = $(this); // context of jquery object
@@ -13,9 +17,9 @@ var Renderer = {
 			Handlebars.registerPartial($partial.attr("id"), $partial.html());
 		});
 	},
+	// Renders Supercategories
 	sidebarPanels: function(panels) {
 		console.log("Rendering Panels...")
-		// Refactor: Could refactor for generic panels in the future
 		var panel_template = this.templates.side_panel_template;
 
 		var all_todos_container = $("#all_todos");
@@ -36,10 +40,37 @@ var Renderer = {
 		var page_info_container = $("#page_info");
 		var todo_list_container = $("#todo_list");
 
-		var sublist = list.select(category.title);
+		var sublist = list.select(category);		
 
 		this.clearAndRender(page_info_container, header_tmp, category);
 		this.clearAndRender(todo_list_container, list_tmp, {todos: sublist});
+	},
+	updateDisplay() {
+		var title = $(".selected a").text(); // Title of current category
+		var todo_count = $(".selected span").text(); // Count of current cateogry
+
+		// This is one of the panels AKA All Todos or Completed
+		var supercategory_title = $(".selected a").parents("tr").siblings().children("td").children("a").children("h2").text()
+		var category = {title: title, todo_count: todo_count, parent_title: supercategory_title}; // Create catagory object from info
+
+		this.display(todoList, category);
+	},
+	counts: function(list, categories, catCounts){
+		console.log("Rendering Counts...");
+
+		// Render Super Categories
+		this.sidebarPanels(categories);
+		$("#all_todos #panel_count").text(list.todos.length);
+		$("#completed_todos #panel_count").text(list.completed.length);
+
+		// Dynamic Categories
+		var counts_templates = this.templates.categories_template;
+
+		var all_todos_container = $("#all_todos");
+		var completed_todos_container = $("#completed_todos");
+
+		this.render(all_todos_container, counts_templates, {categories: catCounts.all});
+		this.render(completed_todos_container, counts_templates, {categories: catCounts.completed});
 	},
 	modal: function(todo) {
 		var todo = todo || {};
@@ -53,27 +84,9 @@ var Renderer = {
 		this.render(container, template, object);
 	},
 	render: function(container, template, object) {
-		// Refactor: Will need to clear out current object won't we?
 		container.append(template(object));
 	},
 	clear: function(container){
 		container.empty();
-	},
-	counts: function(list, panels, catCounts){
-		console.log("Rendering Counts...");
-
-		// Render Panels
-		this.sidebarPanels(panels);
-		$("#all_todos #panel_count").text(list.todos.length);
-		$("#completed_todos #panel_count").text(list.completed.length);
-
-		// Dynamic Categories
-		var counts_templates = this.templates.categories_template;
-
-		var all_todos_container = $("#all_todos");
-		var completed_todos_container = $("#completed_todos");
-
-		this.render(all_todos_container, counts_templates, {categories: catCounts.all});
-		this.render(completed_todos_container, counts_templates, {categories: catCounts.completed});
 	},
 };

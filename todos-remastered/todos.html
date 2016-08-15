@@ -89,7 +89,7 @@
             {{/each}}
         </script>
         <script id="category_template" type="text/x-handlebars" data-type="partial">
-            <tr class="">
+            <tr class="category" data-categoryID="{{@index}}">
                 <td><img src="{{icon_path}}"></img></td>
                 <td><a href="#selectable">{{title}}</a></td> <!-- Will be a date string for this project -->
                 <td><span>{{todo_count}}</span></td>
@@ -113,8 +113,9 @@
         </script>
     </body>
      <!-- Site Code -->
-    <script src="javascripts/dataModels.js"></script>
-    <script src="javascripts/viewModels.js"></script>
+    <script src="javascripts/dataObjects.js"></script>
+    <script src="javascripts/Renderer.js"></script>
+    <script src="javascripts/Controller.js"></script>
     <script src="javascripts/helpers.js"></script>
-    <script src="javascripts/control.js"></script>
+    <script src="javascripts/app.js"></script>
 </html>

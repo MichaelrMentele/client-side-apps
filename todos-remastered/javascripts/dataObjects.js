@@ -48,7 +48,8 @@ var Todo = {
 	},
 	matchFormattedDueDate: function(regx) {
 		var formattedDate = this.formattedDate();
-		return !!formattedDate.match(regx);
+		console.log("matching formattedDate: " + formattedDate + " against patter: " + regx);
+		return this.formattedDate().match(regx);
 	},
 	formattedDate: function() {
 		return this.getMonth() + "/" + this.getYear();
@@ -65,29 +66,48 @@ var TodoList = {
 	delete: function(index) {
 		this.todos.splice(index, 1);
 	},
-	select: function(tag) {
+	select: function(category) {
 		// REFACTOR: Duplication...
-		if (tag === "All Todos") {
-			tag = /.*/;
-			return this.todos.filter( function(todo) {
-				return todo.matchDueDate(tag)
-			});
-		} else if (tag === "Completed Todos") {
-			tag = /.*/;
-			return this.todos.filter( function(todo) {
-				return todo.matchDueDate(tag) && todo.complete;
-			});
-		} else if (tag === "No Due Date") {
-			return this.todos.filter( function(todo) {
-				return todo.noDueDate();
-			});
-		} else if (tag.match(/..\/../)) {
-			return this.todos.filter( function(todo) {
-				return todo.matchFormattedDueDate(tag)
-			});
-		} else {
-			console.log("Invalid Tag");
+		var dateRegEx = /\d\d\/\d\d/;
+		var title = category.title;
+		var superTitle = category.parent_title;
+
+		// If there is no super title AKA we have selected a super title...
+		if (title === "All Todos") {
+			console.log("Selecting all todos...")
+			return this.todos;
+		} else if (title === "Completed") {
+			console.log("Selecting all completed todos...")
+			return this.completed;
+		} 
+
+		if (superTitle === "All Todos") {
+			console.log("Selecting sub category of All Todos...")
+			if (title === "No Due Date") {
+				return this.todos.filter( function(todo) {
+					return todo.noDueDate();
+				});
+			} else if (title.match(dateRegEx).length > 0) {
+				return this.todos.filter( function(todo) {
+					return todo.matchFormattedDueDate(title);
+				});
+			} 
 		}
+
+		if (superTitle === "Completed") {
+			console.log("Selecting sub category of Completed...")
+			if (title === "No Due Date") {
+				return this.completed.filter( function(todo) {
+					return todo.noDueDate();
+				});
+			} else if (title.match(dateRegEx).length > 0) {
+				return this.completed.filter( function(todo) {
+					return todo.matchFormattedDueDate(title);
+				});
+			} 
+		}
+
+		console.log("TodoList.select: Invalid category passed in");
 	},
 	generateBasicCategories: function() {
 		var completed = this.todos.filter( function(todo) {
@@ -101,9 +121,12 @@ var TodoList = {
 		this.completed = completed;
 		this.incomplete = incomplete;
 	},
+	createCategories: function(todos) {
+
+	},
 	countCategories: function(todos) {
-		var categories = this.getCategories(todos);
-		var uniques = this.collectUniqueCategories(categories);
+		var categories = this.getCategoryDueDates(todos);
+		var uniques = this.collectUniqueCategoryTitles(categories);
 
 		var catCounts = [];
 		uniques.forEach(function(cat){
@@ -117,7 +140,7 @@ var TodoList = {
 
 		return catCounts;
 	},
-	getCategories: function(todos) {
+	getCategoryDueDates: function(todos) {
 		var categories = [];
 		todos.forEach(function(todo){
 			if (todo.noDueDate()) {
@@ -128,7 +151,7 @@ var TodoList = {
 		});
 		return categories;
 	},
-	collectUniqueCategories: function(categories) {
+	collectUniqueCategoryTitles: function(categories) {
 		return new Set(categories);
 	},
 	countComplete: function() {
@@ -138,3 +161,18 @@ var TodoList = {
 		return this.incomplete.length;
 	},
 }
+
+var Category = {
+	init: function(params) {
+		this.icon_path = params.icon_path;
+		this.title = params.title;
+		this.todo_count = params.todo_count || 0;
+		this.selected = false;
+	},
+}
+
+var SuperCategory = Object.create(Category);
+SuperCategory.subCategories = [];
+
+var SubCategory = Object.create(Category);
+SubCategory.todos = [];
