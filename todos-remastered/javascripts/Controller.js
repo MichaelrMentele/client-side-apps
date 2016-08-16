@@ -13,7 +13,8 @@ var Controller = {
 	},
 	updatePage: function() {
 		// Sort Todo List
-		// this.todoList.sortByDate();
+		this.todoList.sort();
+		this.todoList.setIDs();
 
 		// Get data for, and then render todo display
 		var categoryName = this.selectedCategory;
@@ -67,7 +68,7 @@ var Controller = {
 	bindTodoToggleUpdate: function() {
 		var self = this;
 		$(".todo_toggle").on("click", function(event) {
-			var index = self.findTodoIndex(event.target);
+			var index = self.findTodoID(event.target);
 			self.todoList.todos[index].toggle();
 			console.log("Checkbox: " + index + " Toggled...")
 			self.updatePage();
@@ -78,11 +79,11 @@ var Controller = {
 		$("a.editable").on("click", function(event){
 			event.preventDefault();
 			console.log("Editing...");
-			var index = self.findTodoIndex(event.target);
+			var index = self.findTodoID(event);
 			var todo = self.todoList.todos[index];
 
 			self.todoEdit(todo);
-			self.deleteTodo(event.target);
+			self.deleteTodo(event);
 			self.updatePage();
 		});
 	},
@@ -116,14 +117,14 @@ var Controller = {
 			localStorage.setItem("list", JSON.stringify(todoList.todos));
 		});
 	},
-	findTodoIndex: function(todo) {
-		return Number($(todo).closest("li").data('id'));
+	findTodoID: function(event) {
+		return Number($(event).closest("li").data('id'));
 	},
-	deleteTodo: function(todo) {
-		index = this.findTodoIndex(todo);
-		console.log("Deleting Todo " + index);
+	deleteTodo: function(event) {
+		var id = this.findTodoID(event);
+		console.log("Deleting Todo " + id);
 		
-		this.todoList.deleteAt(index);
+		this.todoList.delete(id);
 	},
 	saveTodo: function(complete) {
 		// References globals ObjectFactory and ModalHelpers

@@ -12,6 +12,7 @@ var Todo = {
 		this.dueDate = params.dueDate || "No Due Date"; // Expects Date() object
 		this.description = params.description || "";
 		this.complete = params.complete || false;
+		this.id = 9999;
 	},
 	toggle: function() {
 		this.complete = !this.complete;
@@ -45,6 +46,12 @@ var Todo = {
 			return "No Due Date";
 		}
 	},
+	getID: function() {
+		return this.id
+	},
+	setID: function(newID) {
+		this.id = newID;
+	},
 }
 
 var TodoList = {
@@ -54,8 +61,40 @@ var TodoList = {
 	add: function(todo) {
 		this.todos.push(todo);
 	},
-	deleteAt: function(index) {
-		this.todos.splice(index, 1);
+	sort: function() {
+		// mutates todos array
+		var completed = this.getCompleted();
+		completed = this.sortByDate(completed);
+
+		var incomplete = this.getIncomplete();
+		incomplete = this.sortByDate(incomplete);
+
+		this.todos = incomplete.concat(completed);
+	},
+	sortByDate: function(sublist) {
+		var noDueDate = [];
+		var dueDates = [];
+		sublist.forEach(function(todo, id) {
+			if (todo.hasDueDate()) {
+				dueDates.push(todo);
+			} else {
+				noDueDate.push(todo);
+			}
+		});
+
+		dueDates = dueDates.sort(function(a, b) {
+			a.dueDate.getTime() - b.dueDate.getTime();
+		});
+
+		return noDueDate.concat(dueDates);
+	},
+	setIDs: function() {
+		this.todos.forEach(function(todo, idx) {
+			todo.setID(idx);
+		});
+	},
+	delete: function(id) {
+		this.todos.splice(id, 1); // id is equal to an index in this list
 	},
 	getAllTodos: function() {
 		return this.todos;
