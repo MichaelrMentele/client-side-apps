@@ -1,8 +1,8 @@
 var Renderer = {
-	init: function(templateSelector, partialSelector) {
+	init: function() {
 		this.templates = {};
-		this.getTemplates(templateSelector);
-		this.registerPartials(partialSelector);
+		this.getTemplates("script[type='text/x-handlebars']");
+		this.registerPartials("[data-type=partial]");
 	},
 	getTemplates: function(selector) {
 		var self = this;
@@ -17,60 +17,40 @@ var Renderer = {
 			Handlebars.registerPartial($partial.attr("id"), $partial.html());
 		});
 	},
-	// Renders Supercategories
-	sidebarPanels: function(panels) {
-		console.log("Rendering Panels...")
-		var panel_template = this.templates.side_panel_template;
+	displaySidebar: function(allTodosCount, allCatCounts, completedTodosCount, completeCatCounts) {
+		console.log("Rendering Sidebar")
 
-		var all_todos_container = $("#all_todos");
-		var completed_todos_container = $("#completed_todos");
+		// Render All Todos Panel
+		var allTodosContainer = $("#all_todos");
+		var allTodosTemplate = this.templates.all_todos_template;
+		var allTodosInfo = {todo_count: allTodosCount}
+		this.clearAndRender(allTodosContainer, allTodosTemplate, allTodosInfo);
 
-		var all_todos = panels[0];
-		var completed_todos = panels[1];
+		// Render All Todos Sub-Categories
+		var categoriesTemplate = this.templates.categories_template;
+		this.render(allTodosContainer, categoriesTemplate, {categories: allCatCounts});
 
-		this.clearAndRender(all_todos_container, panel_template, all_todos);
-		this.clearAndRender(completed_todos_container, panel_template, completed_todos);
+		// Render Completed Panel
+		var completedTodosContainer = $("#completed_todos");
+		var completedTemplate = this.templates.completed_template;
+		var completedTodosInfo = {todo_count: completedTodosCount}
+		this.clearAndRender(completedTodosContainer, completedTemplate, completedTodosInfo);
+
+		// Render Completed Sub-Categories
+		this.render(completedTodosContainer, categoriesTemplate, {categories: completeCatCounts});
 	},
-	display: function(list, category) {
+	displayCategoryTodos: function(sublist, categoryName) {
 		console.log("Clearing and rendering display...");
 
-		var header_tmp = this.templates.page_info_template;
-		var list_tmp = this.templates.todo_list_template;
+		// Render Header
+		var pageInfoTemplate = this.templates.page_info_template;
+		var pageInfoContainer = $("#page_info");
+		this.clearAndRender(pageInfoContainer, pageInfoTemplate, {title: categoryName, todo_count: sublist.length});
 
-		var page_info_container = $("#page_info");
-		var todo_list_container = $("#todo_list");
-
-		var sublist = list.select(category);		
-
-		this.clearAndRender(page_info_container, header_tmp, category);
-		this.clearAndRender(todo_list_container, list_tmp, {todos: sublist});
-	},
-	updateDisplay() {
-		var title = $(".selected a").text(); // Title of current category
-		var todo_count = $(".selected span").text(); // Count of current cateogry
-
-		// This is one of the panels AKA All Todos or Completed
-		var supercategory_title = $(".selected a").parents("tr").siblings().children("td").children("a").children("h2").text()
-		var category = {title: title, todo_count: todo_count, parent_title: supercategory_title}; // Create catagory object from info
-
-		this.display(todoList, category);
-	},
-	counts: function(list, categories, catCounts){
-		console.log("Rendering Counts...");
-
-		// Render Super Categories
-		this.sidebarPanels(categories);
-		$("#all_todos #panel_count").text(list.todos.length);
-		$("#completed_todos #panel_count").text(list.completed.length);
-
-		// Dynamic Categories
-		var counts_templates = this.templates.categories_template;
-
-		var all_todos_container = $("#all_todos");
-		var completed_todos_container = $("#completed_todos");
-
-		this.render(all_todos_container, counts_templates, {categories: catCounts.all});
-		this.render(completed_todos_container, counts_templates, {categories: catCounts.completed});
+		// Render Body
+		var listTemplate = this.templates.todo_list_template;
+		var listContainer = $("#todo_list");	
+		this.clearAndRender(listContainer, listTemplate, {todos: sublist});
 	},
 	modal: function(todo) {
 		var todo = todo || {};
@@ -79,7 +59,6 @@ var Renderer = {
 		this.clearAndRender(modal_container, modal_tmp, todo);
 	},
 	clearAndRender: function(container, template, object) {
-		// Refactor: Will need to clear out current object won't we?
 		this.clear(container);
 		this.render(container, template, object);
 	},

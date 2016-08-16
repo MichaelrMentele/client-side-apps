@@ -40,11 +40,12 @@ header div span {
   border-radius: 100%;
   margin-left: 10px; }
 
+#new_todo span {
+  color: #148fd5; }
+
 .todos img {
   float: right;
   position: static; }
-.todos #new_todo {
-  color: #148fd5; }
 .todos li {
   position: relative;
   padding: 13px 0 13px 10px; }
@@ -212,7 +213,6 @@ main section.modal {
       margin: 0 9px; }
     main section.modal div .date input {
       width: 108px;
-      background: url(../assets/double-arrow.png) no-repeat right center;
       box-shadow: none;
       border: solid lightgrey 1px; }
     main section.modal div li.textbox label span {

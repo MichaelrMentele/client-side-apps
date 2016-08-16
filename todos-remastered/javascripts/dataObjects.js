@@ -9,10 +9,9 @@
 var Todo = {
 	init: function(params){
 		this.title = params.title || "Task";
-		this.dueDate = params.dueDate || "No Due Date"; //form of "001122"
+		this.dueDate = params.dueDate || "No Due Date"; // Expects Date() object
 		this.description = params.description || "";
 		this.complete = params.complete || false;
-		this.sortValue = this.getSortValue();
 	},
 	toggle: function() {
 		this.complete = !this.complete;
@@ -20,159 +19,102 @@ var Todo = {
 	isComplete: function() {
 		return this.complete;
 	},
-	noDueDate: function() {
-		return this.dueDate === "No Due Date";
+	hasDueDate: function() {
+		return this.dueDate instanceof Date;
 	},
 	getYear: function() {
-		return this.dueDate.substring(4, 6);
+		if (this.hasDueDate) {
+			var fullYear = this.dueDate.getFullYear();
+			return String(fullYear).slice(-2);
+		}
 	},
 	getMonth: function() {
-		return this.dueDate.substring(2, 4);
+		if (this.hasDueDate) {
+			return this.dueDate.getMonth() + 1;
+		}
 	},
 	getDay: function() {
-		return this.dueDate.substring(0, 2);
+		if (this.hasDueDate) {
+			return this.dueDate.getDate();
+		}
 	},
-	getSortValue: function() {
-		if (this.noDueDate()) {
-				return 0;
-		} 
-
-		var yearValue = this.getYear() * 10000;
-		var monthValue = this.getMonth() * 100;
-		var dayValue = this.getDay() * 1;
-
-		return yearValue + monthValue + dayValue;
-	},
-	matchDueDate: function(regx) {
-		return !!this.dueDate.match(regx);
-	},
-	matchFormattedDueDate: function(regx) {
-		var formattedDate = this.formattedDate();
-		console.log("matching formattedDate: " + formattedDate + " against patter: " + regx);
-		return this.formattedDate().match(regx);
-	},
-	formattedDate: function() {
-		return this.getMonth() + "/" + this.getYear();
+	getCategory: function() {
+		if (this.hasDueDate()) {
+			return this.getMonth() + "/" + this.getYear();
+		} else {
+			return "No Due Date";
+		}
 	},
 }
 
 var TodoList = {
 	init: function() {
-		this.todos = []
+		this.todos = [];
 	},
 	add: function(todo) {
 		this.todos.push(todo);
 	},
-	delete: function(index) {
+	deleteAt: function(index) {
 		this.todos.splice(index, 1);
 	},
-	select: function(category) {
-		// REFACTOR: Duplication...
-		var dateRegEx = /\d\d\/\d\d/;
-		var title = category.title;
-		var superTitle = category.parent_title;
-
-		// If there is no super title AKA we have selected a super title...
-		if (title === "All Todos") {
-			console.log("Selecting all todos...")
-			return this.todos;
-		} else if (title === "Completed") {
-			console.log("Selecting all completed todos...")
-			return this.completed;
-		} 
-
-		if (superTitle === "All Todos") {
-			console.log("Selecting sub category of All Todos...")
-			if (title === "No Due Date") {
-				return this.todos.filter( function(todo) {
-					return todo.noDueDate();
-				});
-			} else if (title.match(dateRegEx).length > 0) {
-				return this.todos.filter( function(todo) {
-					return todo.matchFormattedDueDate(title);
-				});
-			} 
-		}
-
-		if (superTitle === "Completed") {
-			console.log("Selecting sub category of Completed...")
-			if (title === "No Due Date") {
-				return this.completed.filter( function(todo) {
-					return todo.noDueDate();
-				});
-			} else if (title.match(dateRegEx).length > 0) {
-				return this.completed.filter( function(todo) {
-					return todo.matchFormattedDueDate(title);
-				});
-			} 
-		}
-
-		console.log("TodoList.select: Invalid category passed in");
+	getAllTodos: function() {
+		return this.todos;
 	},
-	generateBasicCategories: function() {
-		var completed = this.todos.filter( function(todo) {
+	getAllCount: function() {
+		return this.getAllTodos().length;
+	},
+	getCompleted: function() {
+		var completed = this.todos.filter(function(todo) {
 			return todo.complete;
 		});
 
+		return completed;
+	},
+	getCompletedCount: function() {
+		return this.getCompleted().length;
+	},
+	getIncomplete: function() {
 		var incomplete = this.todos.filter(function(todo) {
 			return !todo.complete;
 		});
 
-		this.completed = completed;
-		this.incomplete = incomplete;
+		return incomplete;
 	},
-	createCategories: function(todos) {
-
-	},
-	countCategories: function(todos) {
-		var categories = this.getCategoryDueDates(todos);
-		var uniques = this.collectUniqueCategoryTitles(categories);
-
-		var catCounts = [];
-		uniques.forEach(function(cat){
-			var array = categories.filter(function(ele){
-				return ele === cat;
-			});
-
-			var catCount = {title: cat, todo_count: array.length}
-			catCounts.push(catCount);
-		});
-
-		return catCounts;
-	},
-	getCategoryDueDates: function(todos) {
-		var categories = [];
-		todos.forEach(function(todo){
-			if (todo.noDueDate()) {
-				categories.push(todo.dueDate);
-			} else {
-				categories.push(todo.formattedDate())
+	getSublist: function(targetCategory) {
+		var sublist = [];
+		this.todos.filter(function(todo) {
+			if (targetCategory === todo.getCategory()) {
+				sublist.push(todo);
 			}
 		});
-		return categories;
+		return sublist // [todo, todo ... ]
 	},
-	collectUniqueCategoryTitles: function(categories) {
-		return new Set(categories);
+	getSubCategoryNames: function(sublist) {
+		var todos = sublist || this.todos; 
+		var names = [];
+
+		todos.forEach( function(todo) {
+			names.push(todo.getCategory());
+		});
+
+		return names; 
 	},
-	countComplete: function() {
-		return this.completed.length;
+	getUniqueCategoryNames: function(sublist) {
+		return new Set(this.getSubCategoryNames(sublist));
 	},
-	countIncomplete: function() {
-		return this.incomplete.length;
+	getSubCategoryCounts: function(sublist) {
+		var allNames = this.getSubCategoryNames(sublist);
+		var uniqueNames = this.getUniqueCategoryNames(sublist);
+		var catCounts = []; 
+
+		uniqueNames.forEach(function(unique_name) {
+			var matchedNames = allNames.filter(function(name) {
+				return name === unique_name;
+			});
+
+			catCounts.push({title: unique_name, todo_count: matchedNames.length});
+		});
+
+		return catCounts; // [{title: name, todo_count: count}, {}, ... ]
 	},
 }
-
-var Category = {
-	init: function(params) {
-		this.icon_path = params.icon_path;
-		this.title = params.title;
-		this.todo_count = params.todo_count || 0;
-		this.selected = false;
-	},
-}
-
-var SuperCategory = Object.create(Category);
-SuperCategory.subCategories = [];
-
-var SubCategory = Object.create(Category);
-SubCategory.todos = [];

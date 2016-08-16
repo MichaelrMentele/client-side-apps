@@ -2,27 +2,10 @@
 // APP LOGIC //
 ///////////////
 
-// function init() {
-	// Create todoList
-	var storedList = ObjectFactory.fetchStoredList();
-	var superCategories = ObjectFactory.newPanels();
-	var todoList = ObjectFactory.newTodoList(storedList);
-	todoList.superCategories = superCategories;
+var storedList = fetchStoredList();
+var app = ObjectFactory.newController();
+app.updatePage();
 
-	var pageRenderer = ObjectFactory.newRenderer();
-
-	var controller = Object.create(Controller)
-	controller.init({pageRenderer: pageRenderer, todoList: todoList});
-
-	pageRenderer.sidebarPanels(todoList.superCategories);
-	$("#all_todos a[href='#selectable']").closest("tr").addClass("selected"); // sets all todos to 'selected'
-	controller.updatePage(todoList.superCategories);
-	pageRenderer.updateDisplay();
-
-	
-// }
-
-// init();
-controller.page();
-
-
+// Sidebar: Bubble 'No Todo Date' category to the top
+// Sidebar: Under Complete the sub category 'No Todo Date' should only display completed todos when selected
+// Display: put completed todos on the bottom of the display on selection

@@ -3,10 +3,45 @@ var Controller = {
 	init: function(params) {
 		this.pageRenderer = params.pageRenderer;
 		this.todoList = params.todoList;
+
+		// Initial Selection On Load
+		this.selectedSectionID = "all_todos";
+		this.selectedCategory = "All Todos";
+
 		this.bindTodoEditor();
 		this.bindRememberTodos();
 	},
-	page: function() {
+	updatePage: function() {
+		// Get data for, and then render todo display
+		var categoryName = this.selectedCategory;
+		var list;
+
+		if (categoryName === "All Todos") {
+			list = this.todoList.getAllTodos();
+		} else if (categoryName === "Completed") {
+			list = this.todoList.getCompleted();
+		} else {
+			list = this.todoList.getSublist(categoryName);
+		}
+
+		this.pageRenderer.displayCategoryTodos(list, categoryName);
+
+		// Get data for, and then render sidebar
+		var allTodos = this.todoList.getAllTodos();
+		var allTodosCount = this.todoList.getAllCount();
+		var allCatCounts = this.todoList.getSubCategoryCounts(allTodos);
+
+		var completedTodos = this.todoList.getCompleted();
+		var completedTodosCount = this.todoList.getCompletedCount();
+		var completeCatCounts = this.todoList.getSubCategoryCounts(completedTodos);
+		this.pageRenderer.displaySidebar(allTodosCount, allCatCounts, completedTodosCount, completeCatCounts);
+
+		// Add back selected status
+		$("#" + this.selectedSectionID + " a.selectable:contains('" + this.selectedCategory + "')").closest("tr").addClass("selected");
+		
+		this.rebind();
+	},
+	rebind: function() {
 		this.bindDeletable();
 		this.bindEditable();
 		this.bindSelectable();
@@ -31,7 +66,7 @@ var Controller = {
 	},
 	bindEditable: function() {
 		var self = this;
-		$("a[href='#editable']").on("click", function(event){
+		$("a.editable").on("click", function(event){
 			event.preventDefault();
 			console.log("Editing...");
 			var index = self.findTodoIndex(event.target);
@@ -45,15 +80,18 @@ var Controller = {
 	bindSelectable: function() {
 		var self = this;
 		// Binds selectable to categories
-		$("a[href='#selectable']").on("click", function(event){
+		$("a.selectable").on("click", function(event){
+			console.log("Selectinging...")
 			event.preventDefault();
-			console.log("Selecting");
 
 			$(".selected").removeClass("selected");
 			$(event.target.closest("tr")).addClass("selected");
 
-			self.pageRenderer.updateDisplay();
-			self.page();
+			// Save selection to protect against rerender
+			self.selectedCategory = $(".selected a").text() || "All Todos";
+			self.selectedSectionID = $(".selected").parents("section.status_panel").attr("id") || "all_todos";
+
+			self.updatePage();
 		});
 	},
 	// Handle Create New Todo
@@ -76,17 +114,17 @@ var Controller = {
 		index = this.findTodoIndex(todo);
 		console.log("Deleting Todo " + index);
 		
-		this.todoList.delete(index);
+		this.todoList.deleteAt(index);
 	},
-	// References globals ObjectFactory and ModalHelpers
 	saveTodo: function(complete) {
+		// References globals ObjectFactory and ModalHelpers
 		console.log("Saving todo...");
 
 		var complete = complete || false;
 		var params = ModalHelpers.getModalInput();
 		params.complete = complete;
 		
-		todo = ObjectFactory.createTodo(params);
+		todo = ObjectFactory.newTodo(params);
 		this.todoList.add(todo);
 	},
 
@@ -98,7 +136,7 @@ var Controller = {
 		$("#modal").addClass("modal");
 		this.pageRenderer.modal();
 
-		// If current todo, import info
+		// If current todo, import info into modal
 		if (todo) {	ModalHelpers.importTodoInfo(todo) };
 
 		// Bind Handle Save
@@ -112,42 +150,10 @@ var Controller = {
 		// Bind Handle Save as Complete
 		$("#save_and_complete_todo").on("click", function(event){
 			event.preventDefault();
-			
 			self.saveTodo(true);
 			self.updatePage();
 			ModalHelpers.cleanUpModal();
 		});
-	},
-	updateCategories: function() {
-		// Update counts and returns object of counts
-		this.todoList.generateBasicCategories();
-		var allCatCounts = this.todoList.countCategories(todoList.todos);
-		var completedCatCounts = this.todoList.countCategories(todoList.completed);
-		return {all: allCatCounts, completed: completedCatCounts};
-	},
-	// !!! Refactor: Redundant parallel solutions for selection memory...
-	updatePage: function() {
-		var superCategories = this.todoList.superCategories;
-		var superSelectedTitle = $(".selected a").text();
-
-		// Remembers super category selection
-		superCategories.forEach( function(category) {
-			category.selected = false;
-			if (category.title === superSelectedTitle) {
-				category.selected = true;
-			}
-		});
-
-		// Remebers sub category selection
-		// !!! Broken for duplicate category names (AKA no due date)
-		var subCategoryid= $(".category.selected").data("categoryid");
-
-		var catCounts = this.updateCategories();
-		this.pageRenderer.updateDisplay();
-		this.pageRenderer.counts(this.todoList, this.todoList.superCategories, catCounts);
-
-		this.page();
-
 	},
 }
 	

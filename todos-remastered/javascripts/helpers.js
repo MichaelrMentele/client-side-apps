@@ -1,41 +1,37 @@
 ////////////////////////
 // Helper Collections //
 ////////////////////////
-// Contains ObjectFactory and ModalHelpers function collections.
+function fetchStoredList() {
+	var storedParams = localStorage.getItem("list");
+	return JSON.parse(storedParams);
+}
 
 // Object creation factory.
 var ObjectFactory = {
-	fetchStoredList: function() {
-		var storedParams = localStorage.getItem("list");
-		return JSON.parse(storedParams);
-	},
-	newPanels: function () {
-		var allTodosPanel = Object.create(Category);
-		allTodosPanel.init({icon_path: "assets/todos_icon.png", title: "All Todos"});
+	newController: function(storedList) {
+		var todoList = this.newTodoList(storedList);
+		var pageRenderer = this.newRenderer();
 
-		var completedTodosPanel = Object.create(Category);
-		completedTodosPanel.init({icon_path: "assets/completed_icon.png", title: "Completed"});
+		var controller = Object.create(Controller)
+		controller.init({pageRenderer: pageRenderer, todoList: todoList});
 
-		return [allTodosPanel, completedTodosPanel]
+		return controller;
 	},
 	newRenderer: function () {
 		console.log("Initializing rendering object...")
-		var templateSelector = "script[type='text/x-handlebars']";
-		var partialSelector = "[data-type=partial]";
-
 		var viewRenderer = Object.create(Renderer);
-		viewRenderer.init(templateSelector, partialSelector)
+		viewRenderer.init();
 	
 		return viewRenderer;
 	},
-	newTodoList: function (todoParams) {
+	newTodoList: function (todosParams) {
 		console.log("Initializing todo list...")
 		
 		var list = Object.create(TodoList);
 		list.init();
 		
 		// Write saved todos to todoList
-		if (todoParams) {
+		if (todosParams) {
 			self = this;
 			todoParams.forEach(function(param) {
 				list.add(self.createTodo(param));
@@ -44,7 +40,7 @@ var ObjectFactory = {
 
 		return list;
 	},
-	createTodo: function(params){
+	newTodo: function(params){
 		var todo = Object.create(Todo);
 		todo.init(params);
 
@@ -55,8 +51,15 @@ var ObjectFactory = {
 var ModalHelpers = {
 	getModalInput: function() {
 		var title = $("#title_input").val();
-		var dueDate = $("#date_inputs > input").val() + $("#date_inputs > input").next().next().val() + $("#date_inputs input:last-child").val();
+		var day = $("#date_inputs > input").val();
+		var month = $("#date_inputs > input").next().next().val();
+		var year = $("#date_inputs input:last-child").val();
 		var description = $("textarea").val();
+
+		if (year != "" && month != "" && day != "") {
+			var dueDate = new Date(year, month - 1, day); // Date takes a month as a 0 based index 0 - 11
+		}
+		
 
 		return {title: title, dueDate: dueDate, description: description};
 	},
@@ -71,8 +74,7 @@ var ModalHelpers = {
 		$("#title_input").val(title);
 		$("textarea").val(description);
 
-
-		if (Number(todo.dueDate)) {
+		if (todo.hasDueDate) {
 			var day = todo.getDay();
 			var month = todo.getMonth();
 			var year = todo.getYear();

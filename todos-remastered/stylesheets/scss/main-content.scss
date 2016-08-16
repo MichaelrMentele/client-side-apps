@@ -28,14 +28,14 @@ header {
   }
 }
 
+#new_todo span{
+    color: #148fd5;
+}
+
 .todos {
   img {
     float: right;
     position: static;
-  }
-
-  #new_todos {
-      color: #148fd5;
   }
 
   li {
