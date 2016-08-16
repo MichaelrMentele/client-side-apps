@@ -12,16 +12,25 @@ var Controller = {
 		this.bindRememberTodos();
 	},
 	updatePage: function() {
+		// Sort Todo List
+		// this.todoList.sortByDate();
+
 		// Get data for, and then render todo display
 		var categoryName = this.selectedCategory;
+		var selectedSection = this.selectedSectionID;
 		var list;
 
 		if (categoryName === "All Todos") {
 			list = this.todoList.getAllTodos();
 		} else if (categoryName === "Completed") {
 			list = this.todoList.getCompleted();
-		} else {
+		} else if (selectedSection === "all_todos") {
 			list = this.todoList.getSublist(categoryName);
+		} else if (selectedSection === "completed_todos") {
+			list = this.todoList.getSublist(categoryName);
+			list = list.filter(function(todo) {
+				return todo.complete;
+			});
 		}
 
 		this.pageRenderer.displayCategoryTodos(list, categoryName);
@@ -136,7 +145,7 @@ var Controller = {
 		$("#modal").addClass("modal");
 		this.pageRenderer.modal();
 
-		// If current todo, import info into modal
+		// If current todo, import info into modal, writes directly to html
 		if (todo) {	ModalHelpers.importTodoInfo(todo) };
 
 		// Bind Handle Save
