@@ -114,50 +114,56 @@
     <script src="javascripts/views/editorView.js"></script>
     <script src="javascripts/app.js"></script>
     <script>
-      ContactManager.run({
-          contacts: [
-            {
+      var terrence = new Contact({
               id: 0,
               name : 'Terrence S. Hatfield',
               phone: '651-603-1723',
               email: 'TerrenceSHatfield@rhyta.com',
               img: 0,
-            },
-            {
+            });
+      var chris = new Contact({
               id: 1,
               name : 'Chris M. Manning',
               phone: '513-307-5859',
               email: 'ChrisMManning@dayrep.com',
               img: 1,
-            },
-            {
+            });
+      var ricky = new Contact({
               id: 2,
               name : 'Ricky M. Digiacomo',
               phone: '918-774-0199',
               email: 'RickyMDigiacomo@teleworm.us',
               img: 2,
-            },
-            {
+            });
+      var michael = new Contact({
               id: 3,
               name : 'Michael K. Bayne',
               phone: '702-989-5145',
               email: 'MichaelKBayne@rhyta.com',
               img: 3,
-            },
-            {
+            });
+      var john = new Contact({
               id: 4,
               name : 'John I. Wilson',
               phone: '318-292-6700',
               email: 'JohnIWilson@dayrep.com',
               img: 4,
-            },
-            {
+            });
+      var rodolfo = new Contact({
               id: 5,
               name : 'Rodolfo P. Robinett',
               phone: '803-557-9815',
               email: 'RodolfoPRobinett@jourrapide.com',
               img: 100,
-            }
+            });
+      ContactManager.run({
+          contacts: [
+            terrence.toJSON(),
+            chris.toJSON(),
+            ricky.toJSON(),
+            michael.toJSON(),
+            john.toJSON(),
+            rodolfo.toJSON()
           ]
         });
     </script>
