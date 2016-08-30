@@ -9,8 +9,7 @@
     <link rel="icon" href="assets/logo-small.png">
     <link href="styles/main.css" rel="stylesheet">
     <!-- Dependencies -->
-    <script src="javascripts/dependencies/jquery-3.1.0.js"></script>
-    <script src="javascripts/dependencies/handlebars-v4.0.5.js"></script>
+    <script src="javascripts/vendor/all.js"></script>
   </head>
   <body>
     <header class="row">
@@ -109,6 +108,10 @@
       </form>
     </script>
 
+    <script src="javascripts/models/contact.js"></script>
+    <script src="javascripts/collections/contacts.js"></script>
+    <script src="javascripts/views/contactsViews.js"></script>
+    <script src="javascripts/views/editorView.js"></script>
     <script src="javascripts/app.js"></script>
     <script>
       ContactManager.run({

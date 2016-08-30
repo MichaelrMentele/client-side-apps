@@ -1,9 +1,3 @@
-// CSS: Make edit form nice and aligned
-// CSS: Contacts look nice
-// CSS: Make Fonts look nice
-// CSS: media queries for resizing of columns for contacts
-
-
 var ContactManager = {
 	run: function(params) {
 		this.templates = {};
