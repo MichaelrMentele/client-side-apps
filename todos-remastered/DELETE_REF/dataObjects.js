@@ -1,9 +1,9 @@
 // SUMMARY
 // A TodoList has todos. 
 
-//////////////////
+// ////////////////
 // Data Objects //
-//////////////////
+// ////////////////
 
 // Template for dynamic user created object with form submission.
 var Todo = {

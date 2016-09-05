@@ -1,0 +1,8 @@
+<li data-id="{{id}}">
+  <label class="control control-checkbox">
+      <input class="todo_toggle" type="checkbox" {{#if complete}}checked{{/if}}>
+      <span><a class="editable" href="#">{{title}} &mdash; {{getCategory}}</a></span>
+       <div class="control_indicator"></div>
+  </label>
+  <a href="#deletable"><img src="assets/trash_icon.png"></img></a>
+</li>
