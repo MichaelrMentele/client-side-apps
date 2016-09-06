@@ -1,34 +1,40 @@
-var Todo = Backbone.Todo.extend({
+var Todo = Backbone.Model.extend({
+  defaults: {
+    title: "Task",
+    dueDate: "No Due Date",
+    description: "",
+    complete: false,
+    category: "No Due Date"
+  },
   initialize: function(params) {
-    this.title = params.title || "Task";
-    this.dueDate = params.dueDate || "No Due Date";
-    this.description = params.description || "";
-    this.complete = params.complete || false;
-    this.id = Todo.assignID();
+    this.attributes.id = Todo.assignID();
+    if (this.hasDueDate()) {
+      this.attributes.category = this.getCategory();
+    }
   },
   toggle: function() {
-    this.complete = !this.complete;
+    this.attributes.complete = !this.complete;
   },
   isComplete: function() {
-    return this.complete;
+    return this.attributes.complete;
   },
   hasDueDate: function() {
-    return this.dueDate instanceof Date;
+    return this.attributes.dueDate instanceof Date;
   },
   getYear: function() {
     if (this.hasDueDate) {
-      var fullYear = this.dueDate.getFullYear();
+      var fullYear = this.attributes.dueDate.getFullYear();
       return String(fullYear).slice(-2);
     }
   },
   getMonth: function() {
     if (this.hasDueDate) {
-      return this.dueDate.getMonth() + 1;
+      return this.attributes.dueDate.getMonth() + 1;
     }
   },
   getDay: function() {
     if (this.hasDueDate) {
-      return this.dueDate.getDate();
+      return this.attributes.dueDate.getDate();
     }
   },
   getCategory: function() {
@@ -45,3 +51,8 @@ var Todo = Backbone.Todo.extend({
     this.id = newID;
   },
 });
+
+Todo.assignID = function() {
+  this.last_id = this.last_id + 1 || 1;
+  return this.last_id;
+}

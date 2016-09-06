@@ -1,3 +1,3 @@
 var Category = Backbone.View.extend({
-  template: App.templates.category,
+  template: App.templates.subCategory,
 });
