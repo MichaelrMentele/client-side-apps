@@ -1,54 +1,53 @@
 var Todo = Backbone.Model.extend({
   defaults: {
     title: "Task",
-    dueDate: "No Due Date",
     description: "",
     complete: false,
-    category: "No Due Date"
+  },
+  announce: function() {
+    console.log("I changed"); 
   },
   initialize: function(params) {
-    this.attributes.id = Todo.assignID();
-    if (this.hasDueDate()) {
-      this.attributes.category = this.getCategory();
+    this.set("id", Todo.assignID());
+    this.setCategory();
+    this.setDateProperties();
+
+    this.on('change:dueDate', this.setDateProperties);
+    this.on('change:dueDate', this.setCategory);
+  },
+  setDateProperties: function() {
+    if(this.hasDueDate()) {
+      this.set("date", this.getDay());
+      this.set("month", this.getMonth());
+      this.set("year", this.getYear());
     }
   },
+  setCategory: function() {
+    this.set("category", this.getCategory());
+  },
   toggle: function() {
-    this.attributes.complete = !this.complete;
+    this.set("complete", !this.attributes.complete);
   },
   isComplete: function() {
-    return this.attributes.complete;
+    return this.get("complete");
   },
   hasDueDate: function() {
-    return this.attributes.dueDate instanceof Date;
+    return this.get("dueDate") instanceof moment;
   },
   getYear: function() {
-    if (this.hasDueDate) {
-      var fullYear = this.attributes.dueDate.getFullYear();
+    if (this.hasDueDate()) {
+      var fullYear = this.get("dueDate").year();
       return String(fullYear).slice(-2);
     }
   },
   getMonth: function() {
-    if (this.hasDueDate) {
-      return this.attributes.dueDate.getMonth() + 1;
-    }
+    return (this.hasDueDate() ? this.get("dueDate").month() + 1 : undefined); // using moment.js date wrapper
   },
   getDay: function() {
-    if (this.hasDueDate) {
-      return this.attributes.dueDate.getDate();
-    }
+    return (this.hasDueDate() ? this.get("dueDate").date() : undefined);
   },
   getCategory: function() {
-    if (this.hasDueDate()) {
-      return this.getMonth() + "/" + this.getYear();
-    } else {
-      return "No Due Date";
-    }
-  },
-  getID: function() {
-    return this.id
-  },
-  setID: function(newID) {
-    this.id = newID;
+    return (this.hasDueDate() ? this.getMonth() + "/" + this.getYear() : "No Due Date");
   },
 });
 

@@ -1,54 +1,67 @@
 var TodoList = Backbone.Collection.extend({
   model: Todo,
   getCompleted: function() {
-    var completed = this.todos.filter(function(todo) {
-      return todo.complete;
-    });
-
-    return completed;
+    return this.where({complete: true});
   },
   getIncomplete: function() {
-    var incomplete = this.todos.filter(function(todo) {
-      return !todo.complete;
-    });
-
-    return incomplete;
+    return this.where({complete: false});
   },
-  getSublist: function(targetCategory) {
-    var sublist = new Backbone.Collection();
-    this.todos.filter(function(todo) {
-      if (targetCategory === todo.getCategory()) {
-        sublist.push(todo);
-      }
-    });
+  getSublist: function(id) {
+    var category = $("#" + id + " a").text();
+    var sublist = [];
+
+    // If super category they won't have a searchable category
+    if (category === "All Todos") {
+      sublist = this.models;
+    } else if (category === "Completed") {
+      sublist = this.getCompleted();
+    } else if (id.match("all")) {
+      this.filter(function(todo) {
+        if (category === todo.getCategory()) {
+          sublist.push(todo);
+        }
+      });
+    } else if (id.match("completed")) { 
+      this.getCompleted().filter(function(todo) {
+        if (category === todo.getCategory()) {
+          sublist.push(todo);
+        }
+      });
+    }
+
     return sublist // [todo, todo ... ]
   },
   getSubCategoryNames: function(sublist) {
-    var todos = sublist || this.todos; 
-    var names = [];
+    var categories = [];
 
-    todos.forEach( function(todo) {
-      names.push(todo.getCategory());
+    sublist.forEach(function(todo) {
+      categories.push(todo.getCategory());
     });
 
-    return names; 
+    return categories; 
   },
   getUniqueCategoryNames: function(sublist) {
     return new Set(this.getSubCategoryNames(sublist));
   },
-  // getSubCategoryCounts: function(sublist) {
-  //   var allNames = this.getSubCategoryNames(sublist);
-  //   var uniqueNames = this.getUniqueCategoryNames(sublist);
-  //   var catCounts = []; 
+  generateCategories: function(prefix, sublist) {
+    var allNames = this.getSubCategoryNames(sublist);
+    var uniqueNames = this.getUniqueCategoryNames(sublist);
+    var categories = []; 
 
-  //   uniqueNames.forEach(function(unique_name) {
-  //     var matchedNames = allNames.filter(function(name) {
-  //       return name === unique_name;
-  //     });
+    var index = 0
+    uniqueNames.forEach(function(unique_name) {
+      var matchedNames = allNames.filter(function(name) {
+        return name === unique_name;
+      });
 
-  //     catCounts.push({title: unique_name, todo_count: matchedNames.length});
-  //   });
+      categories.push({
+                id: prefix + "-" + index, 
+                title: unique_name, 
+                todo_count: matchedNames.length
+              });
+      index++
+    });
 
-  //   return catCounts; // [{title: name, todo_count: count}, {}, ... ]
-  // },
+    return categories; // [{id: tag, title: name, todo_count: count}, {}, ... ]
+  },
 });
