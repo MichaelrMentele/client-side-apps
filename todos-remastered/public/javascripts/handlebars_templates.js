@@ -67,5 +67,5 @@ this["JST"]["todo"] = Handlebars.template({"1":function(container,depth0,helpers
     + alias4(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
     + " &mdash; "
     + alias4(((helper = (helper = helpers.category || (depth0 != null ? depth0.category : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"category","hash":{},"data":data}) : helper)))
-    + "</a></span><div class=\"control_indicator\"></div></label><a href=\"#deletable\"><img src=\"assets/trash_icon.png\"></img></a></li>";
+    + "</a></span><div class=\"control_indicator\"></div></label><a class=\"deletable\" href=\"#deletable\"><img src=\"assets/trash_icon.png\"></img></a></li>";
 },"useData":true});

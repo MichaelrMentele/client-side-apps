@@ -2,7 +2,8 @@ var TodoView = Backbone.View.extend({
   template: App.templates.todo,
   events: {
     "click .todo_toggle" : "toggle",
-    "click a" : "edit"
+    "click .editable" : "edit",
+    "click .deletable img" : "destroy",
   },
   initialize: function() {
     this.render();
@@ -21,5 +22,10 @@ var TodoView = Backbone.View.extend({
     e.preventDefault();
     console.log("Editing Todo");
     App.trigger("editTodo", this.model);
+  },
+  destroy: function(e) {
+    e.preventDefault();
+    console.log("Destroying...");
+    this.model.collection.remove(this.model);
   }
 });
