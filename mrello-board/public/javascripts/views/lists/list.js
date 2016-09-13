@@ -30,16 +30,21 @@ MrelloApp.view.List = Backbone.View.extend({
     "click .cancel" : "renderAddCardButton",
     "click .list-title-heading" : "renderTitleEditor",
     "focusout .list-title .title-input" : "updateTitle",
-    "click .list-overflow-menu" : "renderOptions",
+    "click .list-overflow-menu" : "toggleOptions",
+    "click .delete" : "delete",
   },
   initialize: function() {
     console.log("Rendering new list view")
     this.render();
     this.bindEvents(); // Is this necessary?
   },
+  getCardsContainer: function() {
+    return $(this.el).find(".card-list")
+  },
   bindEvents: function() {
     _.extend(this, Backbone.Events);
     this.listenTo(this.model.get("cards"), 'add remove change', this.renderCards);
+    $("overflow-menu-popup").menu()
   },
   render: function() {
     console.log("Rendering " + this.model.get("title") + " list");
@@ -50,11 +55,12 @@ MrelloApp.view.List = Backbone.View.extend({
     return this;
   },
   renderCards: function() {
-    var cardsContainer = $(this.el).find(".card-list");
+    var cardsContainer = this.getCardsContainer();
     new MrelloApp.view.Cards({
       el: cardsContainer,
       collection: this.model.get("cards"),
     });
+    MrelloApp.board.trigger("refreshSearch");
   },
   renderAddCardMenu: function(e) {
     e.preventDefault();
@@ -86,10 +92,18 @@ MrelloApp.view.List = Backbone.View.extend({
     this.model.set("title", title);
     this.render();
   },
-renderOptions: function(e) {
-  e.preventDefault();
-  console.log("render options");
-},
+  toggleOptions: function(e) {
+    e.preventDefault();
+    console.log("Rendering options");
+    
+    this.$(".overflow-menu-container").toggle()
+  },
+  hideOverflow: function(e) {
+    e.preventDefault();
+    this.$(".overflow-menu-container").css({
+      "display" : "none",
+    });
+  },
   addCard: function(e) {
     e.preventDefault();
     var $input = this.$el.find(".title-input")
@@ -98,6 +112,10 @@ renderOptions: function(e) {
     if (title != "") {
       this.model.get("cards").add({title: title});
     }
+  },
+  delete: function(e) {
+    console.log("list destroyed");
+    this.model.destroy();
   }
 });
 

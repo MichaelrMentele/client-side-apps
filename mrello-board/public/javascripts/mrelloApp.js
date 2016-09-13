@@ -25,11 +25,12 @@ var MrelloApp = {
   templates: JST,
   init: function() {
     this.data = new this.collection.Lists(); // Implement persistent data
+    this.drake = dragula();
     this.render();
-    this.bindEvents();
+    this.bindEvents();   
   },
   render: function() {
-    new this.view.Board();
+    this.board = new this.view.Board();
   },
   bindEvents: function() {
     _.extend(this, Backbone.Events);

@@ -24,7 +24,7 @@ MrelloApp.view.Board = Backbone.View.extend({
     "click #new-list-creator .add-list" : "renderAddListMenu",
     "click #new-list-creator .button" : "addList",
     "click #new-list-creator .cancel" : "renderAddListButton",
-    "keyup #search-bar input" : "searchCards"
+    "keyup #search-bar input" : "searchCards",
   },
   initialize: function() {
     this.render();
@@ -33,13 +33,12 @@ MrelloApp.view.Board = Backbone.View.extend({
   bindEvents: function() {
     _.extend(this, Backbone.Events);
     this.listenTo(MrelloApp.data, 'add remove change', this.render);
+    this.on("refreshSearch", this.searchCards);
   },
   render: function() {
     this.renderLists();
     this.renderAddListButton();
     this.searchCards();
-    $(".list-card").draggable();
-    $(".card-list").droppable();
   },
   renderLists: function() {
     new MrelloApp.view.Lists()
@@ -63,9 +62,15 @@ MrelloApp.view.Board = Backbone.View.extend({
   searchCards: function() {
     console.log("searching...")
     var query = $("#search-bar input").val();
-    $(".card").css({"background": "white"});
+    $(".card").css({
+      "background": "white",
+      "box-shadow" : "none"
+    });
     if (query) {
-      $(".card:contains(" + query + ")").css({"background": "aqua"})
+      $(".card:contains(" + query + ")").css({
+        "background": "aqua",
+        "box-shadow" : "4px 4px 4px #888888",
+      })
     }
   }
 });

@@ -16,6 +16,7 @@
 }
 
 .list {
+  position: relative;
   padding: 6px 0;
 }
 
@@ -57,9 +58,23 @@
   background-color: rgba(0,0,0,.15);
 }
 
+.overflow-menu-container * { background-color: white; }
+.overflow-menu-container {
+  display: none;
+  width: 120px;
+  position: absolute;
+  background: white;
+  top: 38px;
+  right: -84px;
+  padding: 8px;
+  border-radius: 3px;
+  border: 1px solid lightgrey;
+  box-shadow: 1px 1px 1px grey;
+}
+
 .card-list {
   box-sizing: border-box;
-  padding: 0 7px;
+  padding: 1px 7px;
 }
 
 .add-card {

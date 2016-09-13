@@ -17,7 +17,7 @@ this["JST"]["card-edit"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main"
     + alias4(((helper = (helper = helpers.listTitle || (depth0 != null ? depth0.listTitle : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"listTitle","hash":{},"data":data}) : helper)))
     + "</a></div><a class=\"cancel mod-window-cancel\" href=\"#\"></a></div><div class=\"card-details\"><span>Description </span><a class=\"open-in-header\" href=\"#\">edit</a><div class=\"card-description\">"
     + alias4(((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"description","hash":{},"data":data}) : helper)))
-    + "</div></div><div class=\"window-column\"><div class=\"window-module add-comment-section\"><div class=\"window-module-header\"><div class=\"mod-window-heading\">Comments<i class=\"glyphicon glyphicon-comment\"></i></div></div><div class=\"module-content add-comment\"><textarea class=\"window-input comment-input-box\" placeholder=\"Write a comment...\"></textarea><input class=\"button submit-comment\" type=\"submit\" value=\"Add\"></div></div><div class=\"window-module add-checklist-section\"><div class=\"window-module-header\"><div class=\"mod-window-heading\">Checklists<i class=\"glyphicon glyphicon-check\"></i></div></div><div class=\"module-content add-checklist\"><input class=\"window-input checklist-input-box\" placeholder=\"Write a checklist item...\"><input class=\"button submit-checklist-item\" type=\"submit\" value=\"Add\"></div></div></div>";
+    + "</div></div><div class=\"window-column\"><div class=\"window-module add-comment-section\"><div class=\"window-module-header\"><div class=\"mod-window-heading\">Comments<i class=\"glyphicon glyphicon-comment\"></i></div></div><div class=\"module-content add-comment\"><textarea class=\"window-input comment-input-box\" placeholder=\"Write a comment...\"></textarea><input class=\"button submit-comment\" type=\"submit\" value=\"Add\"></div><div class=\"module-content comments\"></div></div><div class=\"window-module add-checklist-section\"><div class=\"window-module-header\"><div class=\"mod-window-heading\">Checklists<i class=\"glyphicon glyphicon-check\"></i></div></div><div class=\"module-content add-checklist\"><input class=\"window-input checklist-input-box\" placeholder=\"Write a checklist item...\"><input class=\"button submit-checklist-item\" type=\"submit\" value=\"Add\"></div><div class=\"module-content checklist\"></div></div></div>";
 },"useData":true});
 
 this["JST"]["checklist"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -25,7 +25,13 @@ this["JST"]["checklist"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main"
 },"useData":true});
 
 this["JST"]["comment"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "";
+    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<div class=\"comment\">"
+    + alias4(((helper = (helper = helpers.payload || (depth0 != null ? depth0.payload : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"payload","hash":{},"data":data}) : helper)))
+    + "<i class=\"\">"
+    + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
+    + "</i></div>";
 },"useData":true});
 
 this["JST"]["add-card-button"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -53,7 +59,7 @@ this["JST"]["list-title"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main
 },"useData":true});
 
 this["JST"]["list"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "<div class=\"list\"><div class=\"list-header\"><div class=\"list-title\"></div><a class=\"list-overflow-menu\" href=\"#\"><i class=\"glyphicon glyphicon-option-horizontal\"></i></a></div><div class=\"card-list\" droppable=\"true\"></div><div class=\"add-card\"></div></div>";
+    return "<div class=\"list\"><div class=\"list-header\"><div class=\"list-title\"></div><a class=\"list-overflow-menu\" href=\"#\"><i class=\"glyphicon glyphicon-option-horizontal\"></i></a><div class=\"overflow-menu-container\"><ul class=\"overflow-menu-popup\"><li><a class=\".button delete\" href=\"#\">Delete</a></li></ul></div></div><div class=\"card-list\"></div><div class=\"add-card\"></div></div>";
 },"useData":true});
 
 this["JST"]["title-editor"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {

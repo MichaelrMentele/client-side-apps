@@ -15,5 +15,17 @@
 var MrelloApp = MrelloApp || {};
 
 MrelloApp.view.Comment = Backbone.View.extend({
+  template: MrelloApp.templates.comment,
+  tagName: "div",
+  className: "comment",
+  initialize: function() {
+    this.render();
+  },
+  render: function() {
+    this.$el.html(this.template(this.model.toJSON()));
+    return this;
+  }
 
 });
+
+ 
