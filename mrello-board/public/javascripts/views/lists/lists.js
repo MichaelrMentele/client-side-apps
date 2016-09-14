@@ -9,15 +9,11 @@ MrelloApp.view.Lists = Backbone.View.extend({
   renderLists: function() {
     this.$el.empty();
     this.lists.each(this.renderListView, this);
-    this.setDragulaContainers();
   },
   renderListView: function(list) {
     var listView = new MrelloApp.view.List({
                      model: list
                    });
     this.$el.append(listView.el);
-  },
-  setDragulaContainers: function() {
-    MrelloApp.drake.containers = $(".card-list").get();
   },
 });

@@ -43,8 +43,29 @@ MrelloApp.view.List = Backbone.View.extend({
   },
   bindEvents: function() {
     _.extend(this, Backbone.Events);
-    this.listenTo(this.model.get("cards"), 'add remove change', this.renderCards);
-    $("overflow-menu-popup").menu()
+    this.listenTo(this.model.get("cards"), 'add remove change', this.renderCards.bind(this));
+    this.bindDropEvents();
+  },
+  bindDropEvents: function() {
+    var cardsContainer = this.$el.find(".card-list");
+    var self = this;
+
+    cardsContainer.on("dragenter", function(ev) {
+      ev.preventDefault();
+    });
+
+    cardsContainer.on("dragover", function(ev) {
+      ev.preventDefault();
+      console.log("dragover zone");
+    });
+
+    cardsContainer.on("drop", function(ev) {
+      ev.preventDefault();
+      console.log("drop event fired")
+      self.model.get("cards").add(MrelloApp.draggedObject.clone(), {at: MrelloApp.insertAt});
+      MrelloApp.draggedObject.destroy();
+      
+    });
   },
   render: function() {
     console.log("Rendering " + this.model.get("title") + " list");

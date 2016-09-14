@@ -9,10 +9,11 @@ MrelloApp.view.Cards = Backbone.View.extend({
     this.$el.empty();
     this.collection.each(this.renderCardView, this);
   },
-  renderCardView: function(card) {
+  renderCardView: function(card, index) {
     var cardView = new MrelloApp.view.Card({
                      model: card,
                    });
+
     this.$el.append(cardView.el);
   },
 });

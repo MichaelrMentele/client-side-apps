@@ -5,15 +5,17 @@ MrelloApp.model.Card = Backbone.Model.extend({
     title: "Card",
     description: "",
   },
-  initialize: function() {
+  initialize: function(attributes) {
     console.log("New Card Created");
-    this.set("comments", new MrelloApp.collection.Comments());
+    this.set("comments", attributes.comments || new MrelloApp.collection.Comments());
     this.get("comments").parent = this;
 
-    this.set("checklists", new MrelloApp.collection.Checklists());
+    this.set("checklists", attributes.checklists || new MrelloApp.collection.Checklists());
     this.get("checklists").parent = this;
 
     // Look for the parent Lists' title and cache it for easy rendering
-    this.set("listTitle", this.collection.parent.attributes.title);
+    if (this.collection) {
+      this.set("listTitle", this.collection.parent.attributes.title);
+    }
   }
 });

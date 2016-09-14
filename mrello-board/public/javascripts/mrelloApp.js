@@ -25,7 +25,6 @@ var MrelloApp = {
   templates: JST,
   init: function() {
     this.data = new this.collection.Lists(); // Implement persistent data
-    this.drake = dragula();
     this.render();
     this.bindEvents();   
   },
